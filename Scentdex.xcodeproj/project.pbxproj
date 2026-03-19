@@ -6,17 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXFileReference section */
-		FAAAFA052F6C19050018CEDE /* Scentdex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scentdex.app; sourceTree = BUILT_PRODUCTS_DIR; };
-/* End PBXFileReference section */
+/* Begin PBXBuildFile section */
+		FA0378A02F6C499600C1DDBD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA03789C2F6C499600C1DDBD /* Assets.xcassets */; };
+		FA0378A12F6C499600C1DDBD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA03789D2F6C499600C1DDBD /* ContentView.swift */; };
+		FA0378A32F6C499600C1DDBD /* ScentdexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA03789F2F6C499600C1DDBD /* ScentdexApp.swift */; };
+/* End PBXBuildFile section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		FAAAFA072F6C19050018CEDE /* Scentdex */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Scentdex;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
+/* Begin PBXFileReference section */
+		FA03789C2F6C499600C1DDBD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FA03789D2F6C499600C1DDBD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FA03789F2F6C499600C1DDBD /* ScentdexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScentdexApp.swift; sourceTree = "<group>"; };
+		FAAAFA052F6C19050018CEDE /* Scentdex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Scentdex.app; path = "/Users/macbook/Desktop/Portfolio projects/ScentDex/Scentdex/build/Debug-iphoneos/Scentdex.app"; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		FAAAFA022F6C19050018CEDE /* Frameworks */ = {
@@ -29,20 +30,69 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FA0378A42F6C49BA00C1DDBD /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FA0378A52F6C4A1200C1DDBD /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FA03789F2F6C499600C1DDBD /* ScentdexApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		FA0378A62F6C4A4000C1DDBD /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		FA0378A72F6C4A7E00C1DDBD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FA03789D2F6C499600C1DDBD /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FA0378A82F6C4A9600C1DDBD /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		FA0378A92F6C4AC400C1DDBD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FA03789C2F6C499600C1DDBD /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		FA0378AA2F6C4ADD00C1DDBD /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		FAAAF9FC2F6C19050018CEDE = {
 			isa = PBXGroup;
 			children = (
-				FAAAFA072F6C19050018CEDE /* Scentdex */,
-				FAAAFA062F6C19050018CEDE /* Products */,
+				FA0378A52F6C4A1200C1DDBD /* App */,
+				FA0378A42F6C49BA00C1DDBD /* Models */,
+				FA0378A62F6C4A4000C1DDBD /* ViewModels */,
+				FA0378A72F6C4A7E00C1DDBD /* Views */,
+				FA0378A82F6C4A9600C1DDBD /* Services */,
+				FA0378A92F6C4AC400C1DDBD /* Resources */,
+				FA0378AA2F6C4ADD00C1DDBD /* Utilities */,
 			);
-			sourceTree = "<group>";
-		};
-		FAAAFA062F6C19050018CEDE /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAAAFA052F6C19050018CEDE /* Scentdex.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -59,9 +109,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				FAAAFA072F6C19050018CEDE /* Scentdex */,
 			);
 			name = Scentdex;
 			packageProductDependencies = (
@@ -95,7 +142,7 @@
 			mainGroup = FAAAF9FC2F6C19050018CEDE;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = FAAAFA062F6C19050018CEDE /* Products */;
+			productRefGroup = FAAAF9FC2F6C19050018CEDE;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -109,6 +156,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA0378A02F6C499600C1DDBD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +167,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA0378A12F6C499600C1DDBD /* ContentView.swift in Sources */,
+				FA0378A32F6C499600C1DDBD /* ScentdexApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
