@@ -11,6 +11,7 @@
 		FA0378A12F6C499600C1DDBD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA03789D2F6C499600C1DDBD /* ContentView.swift */; };
 		FA0378A32F6C499600C1DDBD /* ScentdexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA03789F2F6C499600C1DDBD /* ScentdexApp.swift */; };
 		FA0378AD2F6DC90800C1DDBD /* FragranceFamily.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */; };
+		FA0378AF2F6DD30900C1DDBD /* Perfume.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0378AE2F6DD30900C1DDBD /* Perfume.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +19,7 @@
 		FA03789D2F6C499600C1DDBD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		FA03789F2F6C499600C1DDBD /* ScentdexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScentdexApp.swift; sourceTree = "<group>"; };
 		FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragranceFamily.swift; sourceTree = "<group>"; };
+		FA0378AE2F6DD30900C1DDBD /* Perfume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perfume.swift; sourceTree = "<group>"; };
 		FAAAFA052F6C19050018CEDE /* Scentdex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Scentdex.app; path = "/Users/macbook/Desktop/Portfolio projects/ScentDex/Scentdex/build/Debug-iphoneos/Scentdex.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -36,6 +38,7 @@
 			isa = PBXGroup;
 			children = (
 				FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */,
+				FA0378AE2F6DD30900C1DDBD /* Perfume.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -170,6 +173,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA0378AF2F6DD30900C1DDBD /* Perfume.swift in Sources */,
 				FA0378A12F6C499600C1DDBD /* ContentView.swift in Sources */,
 				FA0378A32F6C499600C1DDBD /* ScentdexApp.swift in Sources */,
 				FA0378AD2F6DC90800C1DDBD /* FragranceFamily.swift in Sources */,

@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct ScentdexApp: App {
@@ -6,5 +7,6 @@ struct ScentdexApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: Perfume.self)
     }
 }
