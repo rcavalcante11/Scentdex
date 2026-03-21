@@ -12,6 +12,7 @@
 		FA0378A32F6C499600C1DDBD /* ScentdexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA03789F2F6C499600C1DDBD /* ScentdexApp.swift */; };
 		FA0378AD2F6DC90800C1DDBD /* FragranceFamily.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */; };
 		FA0378AF2F6DD30900C1DDBD /* Perfume.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0378AE2F6DD30900C1DDBD /* Perfume.swift */; };
+		FAD4F32D2F6EF2B9002324F0 /* DeckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD4F32C2F6EF2B9002324F0 /* DeckViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +21,8 @@
 		FA03789F2F6C499600C1DDBD /* ScentdexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScentdexApp.swift; sourceTree = "<group>"; };
 		FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragranceFamily.swift; sourceTree = "<group>"; };
 		FA0378AE2F6DD30900C1DDBD /* Perfume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perfume.swift; sourceTree = "<group>"; };
-		FAAAFA052F6C19050018CEDE /* Scentdex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Scentdex.app; path = "/Users/macbook/Desktop/Portfolio projects/ScentDex/Scentdex/build/Debug-iphoneos/Scentdex.app"; sourceTree = "<absolute>"; };
+		FAD4F32B2F6EEEED002324F0 /* Scentdex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scentdex.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD4F32C2F6EF2B9002324F0 /* DeckViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 		FA0378A62F6C4A4000C1DDBD /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				FAD4F32C2F6EF2B9002324F0 /* DeckViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -98,6 +101,7 @@
 				FA0378A82F6C4A9600C1DDBD /* Services */,
 				FA0378A92F6C4AC400C1DDBD /* Resources */,
 				FA0378AA2F6C4ADD00C1DDBD /* Utilities */,
+				FAD4F32B2F6EEEED002324F0 /* Scentdex.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -120,7 +124,7 @@
 			packageProductDependencies = (
 			);
 			productName = Scentdex;
-			productReference = FAAAFA052F6C19050018CEDE /* Scentdex.app */;
+			productReference = FAD4F32B2F6EEEED002324F0 /* Scentdex.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -176,6 +180,7 @@
 				FA0378AF2F6DD30900C1DDBD /* Perfume.swift in Sources */,
 				FA0378A12F6C499600C1DDBD /* ContentView.swift in Sources */,
 				FA0378A32F6C499600C1DDBD /* ScentdexApp.swift in Sources */,
+				FAD4F32D2F6EF2B9002324F0 /* DeckViewModel.swift in Sources */,
 				FA0378AD2F6DC90800C1DDBD /* FragranceFamily.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
