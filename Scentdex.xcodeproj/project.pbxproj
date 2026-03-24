@@ -13,6 +13,7 @@
 		FA0378AD2F6DC90800C1DDBD /* FragranceFamily.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */; };
 		FA0378AF2F6DD30900C1DDBD /* Perfume.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0378AE2F6DD30900C1DDBD /* Perfume.swift */; };
 		FAD4F32D2F6EF2B9002324F0 /* DeckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD4F32C2F6EF2B9002324F0 /* DeckViewModel.swift */; };
+		FAD4F3302F718E15002324F0 /* DeckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD4F32F2F718E15002324F0 /* DeckView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		FA0378AE2F6DD30900C1DDBD /* Perfume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perfume.swift; sourceTree = "<group>"; };
 		FAD4F32B2F6EEEED002324F0 /* Scentdex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scentdex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD4F32C2F6EF2B9002324F0 /* DeckViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckViewModel.swift; sourceTree = "<group>"; };
+		FAD4F32F2F718E15002324F0 /* DeckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 		FA0378A72F6C4A7E00C1DDBD /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FAD4F32E2F718DF7002324F0 /* Deck */,
 				FA03789D2F6C499600C1DDBD /* ContentView.swift */,
 			);
 			path = Views;
@@ -103,6 +106,14 @@
 				FA0378AA2F6C4ADD00C1DDBD /* Utilities */,
 				FAD4F32B2F6EEEED002324F0 /* Scentdex.app */,
 			);
+			sourceTree = "<group>";
+		};
+		FAD4F32E2F718DF7002324F0 /* Deck */ = {
+			isa = PBXGroup;
+			children = (
+				FAD4F32F2F718E15002324F0 /* DeckView.swift */,
+			);
+			path = Deck;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,6 +193,7 @@
 				FA0378A32F6C499600C1DDBD /* ScentdexApp.swift in Sources */,
 				FAD4F32D2F6EF2B9002324F0 /* DeckViewModel.swift in Sources */,
 				FA0378AD2F6DC90800C1DDBD /* FragranceFamily.swift in Sources */,
+				FAD4F3302F718E15002324F0 /* DeckView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
