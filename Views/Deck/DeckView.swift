@@ -57,7 +57,9 @@ struct DeckView: View {
     private var perfumeListView: some View {
         List{
             ForEach(perfumes) { perfume in
-                Text(perfume.name)
+                PerfumeCardView(perfume: perfume)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
             }
             .onDelete {indexSet in
                 for index in indexSet {
@@ -65,6 +67,7 @@ struct DeckView: View {
                 }
             }
         }
+        .listStyle(.plain)
     }
 }
 
