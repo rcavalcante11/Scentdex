@@ -72,6 +72,16 @@ struct DeckView: View {
 }
 
 #Preview {
-    DeckView()
-        .modelContainer(for: Perfume.self, inMemory: true)
+ 
+    let container = try! ModelContainer(
+            for: Perfume.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        
+        for perfume in Perfume.sampleData {
+            container.mainContext.insert(perfume)
+        }
+        
+        return DeckView()
+            .modelContainer(container)
 }

@@ -43,4 +43,41 @@ class Perfume {
     var allNotes: [String] {
            topNotes + middleNotes + baseNotes
        }
+    // MARK: - Sample Data
+    static var sampleData: [Perfume] {
+        [
+            Perfume(
+                name: "Bleu de Chanel",
+                brand: "Chanel",
+                family: .woody,
+                topNotes: ["Bergamot", "Lemon"],
+                middleNotes: ["Ginger", "Nutmeg"],
+                baseNotes: ["Sandalwood", "Cedar"]
+            ),
+            Perfume(
+                name: "Sauvage",
+                brand: "Dior",
+                family: .fresh,
+                topNotes: ["Bergamot"],
+                middleNotes: ["Pepper", "Lavender"],
+                baseNotes: ["Ambroxan", "Cedar"]
+            ),
+            Perfume(
+                name: "Black Opium",
+                brand: "YSL",
+                family: .oriental,
+                topNotes: ["Pink Pepper", "Orange Blossom"],
+                middleNotes: ["Coffee", "Jasmine"],
+                baseNotes: ["Vanilla", "Patchouli"]
+            ),
+            Perfume(
+                name: "Light Blue",
+                brand: "Dolce & Gabbana",
+                family: .citrus,
+                topNotes: ["Sicilian Lemon", "Apple"],
+                middleNotes: ["Bamboo", "Jasmine"],
+                baseNotes: ["Cedar", "Musk"]
+            )
+        ]
+    }
 }
