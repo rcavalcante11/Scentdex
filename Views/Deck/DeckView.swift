@@ -32,7 +32,7 @@ struct DeckView: View {
                 }
             }
             .sheet(isPresented: $showingAddPerfume) {
-                Text("Add Perfume - coming soon")
+                AddPerfumeView()
             }
         }
     }
