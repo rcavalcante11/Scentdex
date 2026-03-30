@@ -13,6 +13,7 @@
 		FA0378AD2F6DC90800C1DDBD /* FragranceFamily.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */; };
 		FA0378AF2F6DD30900C1DDBD /* Perfume.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0378AE2F6DD30900C1DDBD /* Perfume.swift */; };
 		FA36ACE02F76C4CF00AF05CF /* PerfumeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA36ACDF2F76C4CF00AF05CF /* PerfumeDetailView.swift */; };
+		FA36ACE22F76DB0D00AF05CF /* ScentProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA36ACE12F76DB0D00AF05CF /* ScentProfile.swift */; };
 		FA4227472F73377600FDC76A /* PerfumeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4227462F73377600FDC76A /* PerfumeCardView.swift */; };
 		FA4F19182F7431070001DDCB /* AddPerfumeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F19172F7431070001DDCB /* AddPerfumeView.swift */; };
 		FA4F191A2F7431270001DDCB /* AddPerfumeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F19192F7431270001DDCB /* AddPerfumeViewModel.swift */; };
@@ -27,6 +28,7 @@
 		FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragranceFamily.swift; sourceTree = "<group>"; };
 		FA0378AE2F6DD30900C1DDBD /* Perfume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perfume.swift; sourceTree = "<group>"; };
 		FA36ACDF2F76C4CF00AF05CF /* PerfumeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfumeDetailView.swift; sourceTree = "<group>"; };
+		FA36ACE12F76DB0D00AF05CF /* ScentProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScentProfile.swift; sourceTree = "<group>"; };
 		FA4227462F73377600FDC76A /* PerfumeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfumeCardView.swift; sourceTree = "<group>"; };
 		FA4F19172F7431070001DDCB /* AddPerfumeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPerfumeView.swift; sourceTree = "<group>"; };
 		FA4F19192F7431270001DDCB /* AddPerfumeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPerfumeViewModel.swift; sourceTree = "<group>"; };
@@ -51,6 +53,7 @@
 			children = (
 				FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */,
 				FA0378AE2F6DD30900C1DDBD /* Perfume.swift */,
+				FA36ACE12F76DB0D00AF05CF /* ScentProfile.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -223,6 +226,7 @@
 				FA36ACE02F76C4CF00AF05CF /* PerfumeDetailView.swift in Sources */,
 				FA0378AD2F6DC90800C1DDBD /* FragranceFamily.swift in Sources */,
 				FA4F191A2F7431270001DDCB /* AddPerfumeViewModel.swift in Sources */,
+				FA36ACE22F76DB0D00AF05CF /* ScentProfile.swift in Sources */,
 				FA4227472F73377600FDC76A /* PerfumeCardView.swift in Sources */,
 				FAD4F3302F718E15002324F0 /* DeckView.swift in Sources */,
 				FA4F19182F7431070001DDCB /* AddPerfumeView.swift in Sources */,
