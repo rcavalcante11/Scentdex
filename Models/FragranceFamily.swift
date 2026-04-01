@@ -18,3 +18,4 @@ enum FragranceFamily: String, CaseIterable, Codable {
     case spicy = "Spicy"
     case herbal = "Herbal"
 }
+

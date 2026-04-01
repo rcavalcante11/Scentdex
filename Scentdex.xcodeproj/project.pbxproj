@@ -20,6 +20,8 @@
 		FA4F19182F7431070001DDCB /* AddPerfumeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F19172F7431070001DDCB /* AddPerfumeView.swift */; };
 		FA4F191A2F7431270001DDCB /* AddPerfumeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F19192F7431270001DDCB /* AddPerfumeViewModel.swift */; };
 		FACD1A742F7D30E800A568F4 /* PerfumeGender.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACD1A732F7D30E800A568F4 /* PerfumeGender.swift */; };
+		FACD1A792F7D673E00A568F4 /* FragranceResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACD1A782F7D673E00A568F4 /* FragranceResult.swift */; };
+		FACD1A7B2F7D691100A568F4 /* PerfumeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACD1A7A2F7D691100A568F4 /* PerfumeService.swift */; };
 		FAD4F32D2F6EF2B9002324F0 /* DeckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD4F32C2F6EF2B9002324F0 /* DeckViewModel.swift */; };
 		FAD4F3302F718E15002324F0 /* DeckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD4F32F2F718E15002324F0 /* DeckView.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +40,10 @@
 		FA4F19172F7431070001DDCB /* AddPerfumeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPerfumeView.swift; sourceTree = "<group>"; };
 		FA4F19192F7431270001DDCB /* AddPerfumeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPerfumeViewModel.swift; sourceTree = "<group>"; };
 		FACD1A732F7D30E800A568F4 /* PerfumeGender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfumeGender.swift; sourceTree = "<group>"; };
+		FACD1A762F7D494D00A568F4 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		FACD1A772F7D62E900A568F4 /* Scentdex-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Scentdex-Info.plist"; sourceTree = "<group>"; };
+		FACD1A782F7D673E00A568F4 /* FragranceResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragranceResult.swift; sourceTree = "<group>"; };
+		FACD1A7A2F7D691100A568F4 /* PerfumeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfumeService.swift; sourceTree = "<group>"; };
 		FAD4F32B2F6EEEED002324F0 /* Scentdex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scentdex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD4F32C2F6EF2B9002324F0 /* DeckViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckViewModel.swift; sourceTree = "<group>"; };
 		FAD4F32F2F718E15002324F0 /* DeckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckView.swift; sourceTree = "<group>"; };
@@ -61,6 +67,7 @@
 				FA0378AE2F6DD30900C1DDBD /* Perfume.swift */,
 				FA36ACE12F76DB0D00AF05CF /* ScentProfile.swift */,
 				FACD1A732F7D30E800A568F4 /* PerfumeGender.swift */,
+				FACD1A782F7D673E00A568F4 /* FragranceResult.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -97,6 +104,7 @@
 		FA0378A82F6C4A9600C1DDBD /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FACD1A7A2F7D691100A568F4 /* PerfumeService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -143,6 +151,8 @@
 		FAAAF9FC2F6C19050018CEDE = {
 			isa = PBXGroup;
 			children = (
+				FACD1A772F7D62E900A568F4 /* Scentdex-Info.plist */,
+				FACD1A762F7D494D00A568F4 /* Config.xcconfig */,
 				FA0378A52F6C4A1200C1DDBD /* App */,
 				FA0378A42F6C49BA00C1DDBD /* Models */,
 				FA0378A62F6C4A4000C1DDBD /* ViewModels */,
@@ -240,12 +250,14 @@
 				FACD1A742F7D30E800A568F4 /* PerfumeGender.swift in Sources */,
 				FA0378AF2F6DD30900C1DDBD /* Perfume.swift in Sources */,
 				FA0378A12F6C499600C1DDBD /* ContentView.swift in Sources */,
+				FACD1A7B2F7D691100A568F4 /* PerfumeService.swift in Sources */,
 				FA0378A32F6C499600C1DDBD /* ScentdexApp.swift in Sources */,
 				FAD4F32D2F6EF2B9002324F0 /* DeckViewModel.swift in Sources */,
 				FA36ACE02F76C4CF00AF05CF /* PerfumeDetailView.swift in Sources */,
 				FA0378AD2F6DC90800C1DDBD /* FragranceFamily.swift in Sources */,
 				FA370F022F7AB228005F2532 /* ProfileViewModel.swift in Sources */,
 				FA4F191A2F7431270001DDCB /* AddPerfumeViewModel.swift in Sources */,
+				FACD1A792F7D673E00A568F4 /* FragranceResult.swift in Sources */,
 				FA36ACE22F76DB0D00AF05CF /* ScentProfile.swift in Sources */,
 				FA4227472F73377600FDC76A /* PerfumeCardView.swift in Sources */,
 				FAD4F3302F718E15002324F0 /* DeckView.swift in Sources */,
@@ -258,6 +270,7 @@
 /* Begin XCBuildConfiguration section */
 		FAAAFA102F6C19060018CEDE /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FACD1A762F7D494D00A568F4 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -321,6 +334,7 @@
 		};
 		FAAAFA112F6C19060018CEDE /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FACD1A762F7D494D00A568F4 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -384,6 +398,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Scentdex-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -415,6 +430,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Scentdex-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
