@@ -19,6 +19,7 @@
 		FA4227472F73377600FDC76A /* PerfumeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4227462F73377600FDC76A /* PerfumeCardView.swift */; };
 		FA4F19182F7431070001DDCB /* AddPerfumeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F19172F7431070001DDCB /* AddPerfumeView.swift */; };
 		FA4F191A2F7431270001DDCB /* AddPerfumeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F19192F7431270001DDCB /* AddPerfumeViewModel.swift */; };
+		FACD1A742F7D30E800A568F4 /* PerfumeGender.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACD1A732F7D30E800A568F4 /* PerfumeGender.swift */; };
 		FAD4F32D2F6EF2B9002324F0 /* DeckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD4F32C2F6EF2B9002324F0 /* DeckViewModel.swift */; };
 		FAD4F3302F718E15002324F0 /* DeckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD4F32F2F718E15002324F0 /* DeckView.swift */; };
 /* End PBXBuildFile section */
@@ -36,6 +37,7 @@
 		FA4227462F73377600FDC76A /* PerfumeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfumeCardView.swift; sourceTree = "<group>"; };
 		FA4F19172F7431070001DDCB /* AddPerfumeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPerfumeView.swift; sourceTree = "<group>"; };
 		FA4F19192F7431270001DDCB /* AddPerfumeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPerfumeViewModel.swift; sourceTree = "<group>"; };
+		FACD1A732F7D30E800A568F4 /* PerfumeGender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfumeGender.swift; sourceTree = "<group>"; };
 		FAD4F32B2F6EEEED002324F0 /* Scentdex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scentdex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD4F32C2F6EF2B9002324F0 /* DeckViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckViewModel.swift; sourceTree = "<group>"; };
 		FAD4F32F2F718E15002324F0 /* DeckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckView.swift; sourceTree = "<group>"; };
@@ -58,6 +60,7 @@
 				FA0378AC2F6DC90800C1DDBD /* FragranceFamily.swift */,
 				FA0378AE2F6DD30900C1DDBD /* Perfume.swift */,
 				FA36ACE12F76DB0D00AF05CF /* ScentProfile.swift */,
+				FACD1A732F7D30E800A568F4 /* PerfumeGender.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -234,6 +237,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA370F052F7ABB08005F2532 /* ScentAuraView.swift in Sources */,
+				FACD1A742F7D30E800A568F4 /* PerfumeGender.swift in Sources */,
 				FA0378AF2F6DD30900C1DDBD /* Perfume.swift in Sources */,
 				FA0378A12F6C499600C1DDBD /* ContentView.swift in Sources */,
 				FA0378A32F6C499600C1DDBD /* ScentdexApp.swift in Sources */,

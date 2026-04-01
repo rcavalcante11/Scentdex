@@ -28,6 +28,11 @@ struct AddPerfumeView: View {
                     Picker("Family", selection: $viewModel.family) {
                         ForEach(FragranceFamily.allCases, id: \.self) {family in
                             Text(family.rawValue).tag(family)
+                            Picker("Gender", selection: $viewModel.gender) {
+                                ForEach(PerfumeGender.allCases, id: \.self) { gender in
+                                    Text(gender.rawValue).tag(gender)
+                                }
+                            }
                         }
                     }
                 }

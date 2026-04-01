@@ -14,6 +14,7 @@ class Perfume {
     var name: String
     var brand: String
     var family: FragranceFamily
+    var gender: PerfumeGender
     var topNotes: [String]
     var middleNotes: [String]
     var baseNotes: [String]
@@ -25,6 +26,7 @@ class Perfume {
         name: String,
         brand: String,
         family: FragranceFamily,
+        gender: PerfumeGender = .forWomenAndMen,
         topNotes: [String] = [],
         middleNotes: [String] = [],
         baseNotes: [String] = [],
@@ -34,6 +36,7 @@ class Perfume {
         self.name = name
         self.brand = brand
         self.family = family
+        self.gender = gender
         self.topNotes = topNotes
         self.middleNotes = middleNotes
         self.baseNotes = baseNotes
@@ -50,6 +53,7 @@ class Perfume {
                 name: "Bleu de Chanel",
                 brand: "Chanel",
                 family: .woody,
+                gender: .forMen,
                 topNotes: ["Bergamot", "Lemon"],
                 middleNotes: ["Ginger", "Nutmeg"],
                 baseNotes: ["Sandalwood", "Cedar"]
@@ -58,6 +62,7 @@ class Perfume {
                 name: "Sauvage",
                 brand: "Dior",
                 family: .fresh,
+                gender: .forMen,
                 topNotes: ["Bergamot"],
                 middleNotes: ["Pepper", "Lavender"],
                 baseNotes: ["Ambroxan", "Cedar"]
@@ -66,6 +71,7 @@ class Perfume {
                 name: "Black Opium",
                 brand: "YSL",
                 family: .oriental,
+                gender: .forWomen,
                 topNotes: ["Pink Pepper", "Orange Blossom"],
                 middleNotes: ["Coffee", "Jasmine"],
                 baseNotes: ["Vanilla", "Patchouli"]
@@ -74,6 +80,7 @@ class Perfume {
                 name: "Light Blue",
                 brand: "Dolce & Gabbana",
                 family: .citrus,
+                gender: .forWomenAndMen,
                 topNotes: ["Sicilian Lemon", "Apple"],
                 middleNotes: ["Bamboo", "Jasmine"],
                 baseNotes: ["Cedar", "Musk"]

@@ -17,6 +17,7 @@ class AddPerfumeViewModel {
     var name: String = ""
     var brand: String = ""
     var family: FragranceFamily = .floral
+    var gender: PerfumeGender = .forWomenAndMen
     var topNotes: String = ""
     var middleNotes: String = ""
     var baseNotes: String = ""
@@ -33,7 +34,9 @@ class AddPerfumeViewModel {
     func savePerfume(context: ModelContext){
         let perfume = Perfume(
             name: name.trimmingCharacters(in: .whitespaces),
-            brand: brand.trimmingCharacters(in: .whitespaces), family: family,
+            brand: brand.trimmingCharacters(in: .whitespaces),
+            family: family,
+            gender: gender,
             topNotes: parsedNotes( from: topNotes),
             middleNotes: parsedNotes( from: middleNotes),
             baseNotes: parsedNotes( from: baseNotes),
