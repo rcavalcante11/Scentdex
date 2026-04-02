@@ -9,7 +9,7 @@
 import SwiftUI
 import SwiftData
 
-struct AddPerfumeView: View {
+struct AddPerfumeView: View     {
     
     
     // MARK: - Properties
@@ -24,19 +24,34 @@ struct AddPerfumeView: View {
             Form {
                 Section("Required") {
                     TextField("Perfume name", text: $viewModel.name)
+                    
+                    if viewModel.showSuggestion {
+                        suggestionsView
+                    }
+                    
+                    if viewModel.isSearching {
+                        HStack {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text("Searching...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    
                     TextField("Brand", text: $viewModel.brand)
                     Picker("Family", selection: $viewModel.family) {
                         ForEach(FragranceFamily.allCases, id: \.self) {family in
                             Text(family.rawValue).tag(family)
-                            Picker("Gender", selection: $viewModel.gender) {
-                                ForEach(PerfumeGender.allCases, id: \.self) { gender in
-                                    Text(gender.rawValue).tag(gender)
-                                }
-                            }
+                        }
+                    }
+                    Picker("Gender", selection: $viewModel.gender) {
+                        ForEach(PerfumeGender.allCases, id: \.self) { gender in
+                            Text(gender.rawValue).tag(gender)
                         }
                     }
                 }
-                //maybe delete
+                
                 Section("Notes (Optional, Comma separated)") {
                     TextField("Top notes", text: $viewModel.topNotes)
                     TextField("Middle notes", text: $viewModel.middleNotes)
@@ -59,12 +74,47 @@ struct AddPerfumeView: View {
                     }
                     .disabled(!viewModel.isValid)
                 }
+                
             }
         }
     }
-}
-
+    
+    //MARK: - Subviews
+    private var suggestionsView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(viewModel.searchResults) {result in
+                Button {
+                    viewModel.selectResult(result)
+                }   label: {
+                    HStack {
+                        VStack(alignment: .leading,spacing: 2) {
+                            Text(result.name)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.secondary)
+                            Text(result.brand)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Text(result.family.capitalized)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 8)
+                }
+                if result.id != viewModel.searchResults.last?.id {
+                    Divider()
+                    
+                    }
+                }
+            }
+        }
+    }
+    
 #Preview {
     AddPerfumeView()
         .modelContainer(for: Perfume.self, inMemory: true)
 }
+
+
