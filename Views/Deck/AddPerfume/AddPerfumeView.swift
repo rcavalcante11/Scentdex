@@ -49,10 +49,15 @@ struct AddPerfumeView: View {
                     }
                 }
 
-                Section("Notes (optional, comma separated)") {
-                    TextField("Top notes", text: $viewModel.topNotes)
-                    TextField("Middle notes", text: $viewModel.middleNotes)
-                    TextField("Base notes", text: $viewModel.baseNotes)
+                Section{
+                    DisclosureGroup("Notes (optional)") {
+                        TextField("Top notes — ex: Bergamot, Lemon",
+                                  text: $viewModel.topNotes)
+                        TextField("Middle notes — ex: Rose, Jasmine",
+                                  text: $viewModel.middleNotes)
+                        TextField("Base notes — ex: Sandalwood, Cedar",
+                                  text: $viewModel.baseNotes)
+                    }
                 }
             }
             .navigationTitle(viewModel.navigationTitle)
