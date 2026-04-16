@@ -25,6 +25,12 @@ class PerfumeService {
         return try await fetch(from: endpoint)
     }
     
+    // MARK: - Match By Notes
+    func searchByNotes(notes: String) async throws -> [FragranceResult] {
+        let endpoint = "\(baseURL)/fragrances/match?notes=\(notes.urlEncoded)&limit=6"
+        return try await fetch(from: endpoint)
+    }
+    
     // MARK: - Private
     private func fetch<T: Codable>(from urlString: String) async throws -> [T] {
         guard let url = URL(string: urlString) else {
