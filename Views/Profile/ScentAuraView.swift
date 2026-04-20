@@ -120,11 +120,18 @@ struct ScentAuraView: View {
                                 .background( .secondary.opacity(0.15))
                                 .clipShape(Capsule())
                             
+                            
+                            
                         }
                     }
                 }
             }
+            
             familyDistributionSection
+            RecommendationCarouselView(
+                        profile: profile,
+                        ownedPerfumes: [] // vamos passar os dados reais a seguir
+                    )
         }
     }
     
