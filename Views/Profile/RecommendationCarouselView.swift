@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RecommendationCarouselView: View {
     
     // MARK: -  Properties
     let profile: ScentProfile
-    let ownedPerfumes: [Perfume]
+    @Query private var ownedPerfumes: [Perfume] 
     @State private var viewModel = RecommendationViewModel()
     
     // MARK: -  Body
@@ -29,9 +30,9 @@ struct RecommendationCarouselView: View {
         }
     
     private var headerView: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .trailing, spacing: 4) {
             Text("You might also like")
-                .font(.title3)
+                .font(.title2)
                 .fontWeight(.semibold)
             Text("Based on your \(profile.profileTitle) profile")
                 .font(.caption)

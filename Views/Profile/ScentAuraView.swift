@@ -129,9 +129,7 @@ struct ScentAuraView: View {
             
             familyDistributionSection
             RecommendationCarouselView(
-                        profile: profile,
-                        ownedPerfumes: [] // vamos passar os dados reais a seguir
-                    )
+                        profile: profile)
         }
     }
     
