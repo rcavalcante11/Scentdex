@@ -14,6 +14,7 @@ struct RecommendationCarouselView: View {
     let profile: ScentProfile
     @Query private var ownedPerfumes: [Perfume] 
     @State private var viewModel = RecommendationViewModel()
+    @State private var selectedFragrance: FragranceResult? = nil
     
     // MARK: -  Body
     var body: some View {
@@ -30,7 +31,7 @@ struct RecommendationCarouselView: View {
         }
     
     private var headerView: some View {
-        VStack(alignment: .trailing, spacing: 4) {
+        VStack(alignment: .leading, spacing: 4) {
             Text("You might also like")
                 .font(.title2)
                 .fontWeight(.semibold)
@@ -71,21 +72,53 @@ struct RecommendationCarouselView: View {
         .padding(.horizontal, 24)
     }
     
-    private func  carouselView(_ perfumes: [FragranceResult]) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+    private func carouselView(_ perfumes: [FragranceResult]) -> some View {
+        let limited = Array(perfumes.prefix(3))
+
+        return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(perfumes) { perfume in
-                    RecommendationCardView(fragrance: perfume)
+                ForEach(Array(limited.enumerated()), id: \.element.id) { index, perfume in
+                    if index < 2 {
+                        // Cards 1 e 2 — tappable
+                        Button {
+                            selectedFragrance = perfume
+                        } label: {
+                            RecommendationCardView(fragrance: perfume)
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        // Card 3 — blur premium
+                        RecommendationCardView(fragrance: perfume)
+                            .blur(radius: 6)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(.ultraThinMaterial)
+                                VStack(spacing: 8) {
+                                    Image(systemName: "lock.fill")
+                                        .font(.title2)
+                                        .foregroundStyle(.secondary)
+                                    Text("Available on Premium")
+                                        .font(.caption)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                    }
                 }
             }
             .scrollTargetLayout()
-            .padding(.horizontal,24)
-            
-            }
-        
+            .padding(.horizontal, 24)
+        }
         .scrollTargetBehavior(.viewAligned)
-        
-            }
+        .sheet(item: $selectedFragrance) { fragrance in
+            RecommendationDetailSheet(
+                fragrance: fragrance,
+                ownedPerfumes: ownedPerfumes
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
+    }
     
     private var emptyView: some View {
         Text("No recommendations available yet")
