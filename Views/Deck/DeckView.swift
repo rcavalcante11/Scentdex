@@ -34,6 +34,17 @@ struct DeckView: View {
             .sheet(isPresented: $showingAddPerfume) {
                 AddPerfumeView()
             }
+            
+            .alert("Remove Perfume", isPresented: $viewModel.showingDeleteAlert){
+                Button("Remove", role: .destructive) {
+                    if let perfume = viewModel.perfumeToDelete {
+                        viewModel.delete(perfume,context: modelContext)
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Are you sure you want  to remove \(viewModel.perfumeToDelete?.name ?? "this perfume") from your deck?")
+            }
         }
     }
     
@@ -65,7 +76,8 @@ struct DeckView: View {
             }
             .onDelete {indexSet in
                 for index in indexSet {
-                    viewModel.delete(perfumes[index], context: modelContext)
+                    let perfume = perfumes[index]
+                    viewModel.confirmDelete(perfume, context: modelContext)
                 }
             }
         }

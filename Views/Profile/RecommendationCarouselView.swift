@@ -33,7 +33,7 @@ struct RecommendationCarouselView: View {
     private var headerView: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("You might also like")
-                .font(.title2)
+                .font(.title3)
                 .fontWeight(.semibold)
             Text("Based on your \(profile.profileTitle) profile")
                 .font(.caption)

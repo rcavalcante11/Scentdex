@@ -100,6 +100,13 @@ struct ScentAuraView: View {
     private var profileInfo: some View {
         VStack(alignment: .leading, spacing: 24) {
             
+            LinearGradient(
+                       colors: [.black.opacity(0.05), .clear],
+                       startPoint: .top,
+                       endPoint: .bottom
+                   )
+            .frame(height: 12)
+            
             Text(profile.profileDescription)
                 .font(.body)
                 .foregroundStyle(.secondary)
@@ -147,7 +154,7 @@ struct ScentAuraView: View {
                     
                     GeometryReader { geo in
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(familyColor(family).opacity(0.7))
+                            .fill(family.color.opacity(0.7))
                             .frame(
                                 width: geo.size.width * barWidth(for: count),
                                 height: 8
@@ -178,20 +185,6 @@ struct ScentAuraView: View {
             .background( .white.opacity(0.15))
             .foregroundStyle(.white)
             .clipShape(Capsule())
-        }
-    
-    private func familyColor(_ family: FragranceFamily) -> Color {
-            switch family {
-            case .woody:     return .purple
-            case .floral:    return .pink
-            case .oriental:  return .orange
-            case .fresh:     return .mint
-            case .citrus:    return .yellow
-            case .aquatic:   return .blue
-            case .gourmand:  return .purple
-            case .spicy:     return .red
-            case .herbal:    return .green
-            }
         }
     
     private var topFamilies: [String] {
@@ -241,19 +234,7 @@ struct ScentAuraView: View {
 }
 
 // MARK: - Color Extension
-extension Color {
-    init?(hex: String) {
-        
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let r = Double((int >> 16) & 0xFF) / 255
-        let g = Double((int >> 8) & 0xFF) / 255
-        let b = Double(int & 0xFF) / 255
-        self.init(red: r, green: g, blue: b)
-    }
-}
-        
+
 #Preview {
     ScentAuraView(profile: ScentProfile(
         dominantFamily: .woody,

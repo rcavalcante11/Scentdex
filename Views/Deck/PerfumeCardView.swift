@@ -1,15 +1,15 @@
 import SwiftUI
 import SwiftData
 
-struct PerfumeCardView: View{
-    
-    // MARK properties
+struct PerfumeCardView: View {
+
+    // MARK: - Properties
     let perfume: Perfume
-    
-    //MARK Body
+
+    // MARK: - Body
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack{
+            HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(perfume.name)
                         .font(.headline)
@@ -24,38 +24,24 @@ struct PerfumeCardView: View{
                     .fontWeight(.medium)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
-                    .background(familyColor.opacity(0.2))
-                    .foregroundStyle(familyColor)
+                    .background(perfume.family.color.opacity(0.2))
+                    .foregroundStyle(perfume.family.color)
                     .clipShape(Capsule())
-        }
-    }
-        .padding()
-                .background(Color(.systemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
             }
-    
-    // MARK: - Helpers
-       private var familyColor: Color {
-           switch perfume.family {
-           case .floral:    return .pink
-           case .woody:     return .brown
-           case .oriental:  return .orange
-           case .fresh:     return .mint
-           case .citrus:    return .yellow
-           case .aquatic:   return .blue
-           case .gourmand:  return .purple
-           case .spicy:     return .red
-           case .herbal:    return .green
-           }
-       }
-   }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
+    }
+}
 
 #Preview {
     PerfumeCardView(perfume: Perfume(
         name: "Bleu de Chanel",
         brand: "Chanel",
         family: .woody,
+        gender: .forWomenAndMen,
         topNotes: ["Bergamot", "Lemon"],
         middleNotes: ["Ginger", "Nutmeg"],
         baseNotes: ["Sandalwood", "Cedar"]
@@ -63,4 +49,3 @@ struct PerfumeCardView: View{
     .padding()
     .modelContainer(for: Perfume.self, inMemory: true)
 }
-
