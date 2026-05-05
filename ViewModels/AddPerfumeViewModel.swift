@@ -25,6 +25,7 @@ class AddPerfumeViewModel {
     var searchResults: [FragranceResult] = []
     var isSearching: Bool = false
     var selectedResult: FragranceResult? = nil
+    var imageUrl: String? = nil
 
     // MARK: - Mode
     private let mode: FormMode
@@ -51,6 +52,8 @@ class AddPerfumeViewModel {
         case .create: return "Add Perfume"
         case .edit:   return "Edit Perfume"
         }
+        
+        
     }
 
     // MARK: - Intent
@@ -64,6 +67,8 @@ class AddPerfumeViewModel {
         middleNotes = result.middleNotes?.joined(separator: ", ") ?? ""
         baseNotes = result.baseNotes?.joined(separator: ", ") ?? ""
         searchResults = []
+        imageUrl = result.imageUrl
+        
     }
 
     func save(context: ModelContext) {
@@ -76,7 +81,8 @@ class AddPerfumeViewModel {
                 gender: gender,
                 topNotes: parsedNotes(from: topNotes),
                 middleNotes: parsedNotes(from: middleNotes),
-                baseNotes: parsedNotes(from: baseNotes)
+                baseNotes: parsedNotes(from: baseNotes),
+                imageUrl: imageUrl
             )
             context.insert(perfume)
 

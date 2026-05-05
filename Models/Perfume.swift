@@ -19,6 +19,7 @@ class Perfume {
     var middleNotes: [String]
     var baseNotes: [String]
     var dateAdded: Date
+    var imageUrl: String?
     
     
     init(
@@ -30,7 +31,9 @@ class Perfume {
         topNotes: [String] = [],
         middleNotes: [String] = [],
         baseNotes: [String] = [],
-        dateAdded: Date = Date()
+        dateAdded: Date = Date(),
+        imageUrl: String? = nil
+        
     ) {
         self.id = id
         self.name = name
@@ -41,6 +44,7 @@ class Perfume {
         self.middleNotes = middleNotes
         self.baseNotes = baseNotes
         self.dateAdded = dateAdded
+        self.imageUrl = imageUrl
     }
 
     var allNotes: [String] {

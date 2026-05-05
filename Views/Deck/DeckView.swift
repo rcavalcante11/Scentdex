@@ -3,6 +3,7 @@
 import SwiftUI
 import  SwiftData
 
+
 struct DeckView: View {
     
     // MARK: - Properties
@@ -10,12 +11,24 @@ struct DeckView: View {
     @Query private var perfumes: [Perfume]
     @State private var showingAddPerfume = false
     @State var viewModel = DeckViewModel()
+    @State private var searchText = ""
+    
+    private var filteredPerfumes: [Perfume] {
+        if searchText.isEmpty {
+            return perfumes
+        }
+        return perfumes.filter { perfume in
+            perfume.name.localizedCaseInsensitiveContains(searchText) ||
+            perfume.brand.localizedCaseInsensitiveContains(searchText) ||
+            perfume.family.rawValue.localizedCaseInsensitiveContains(searchText)
+        }
+    }
     
     // MARK: - Body
     var body: some View  {
         NavigationStack{
             Group {
-                if perfumes.isEmpty {
+                if filteredPerfumes.isEmpty {
                     emptyStateView
                 } else {
                     perfumeListView
@@ -31,6 +44,9 @@ struct DeckView: View {
                     }
                 }
             }
+            
+            .navigationTitle("My Deck")
+            .searchable(text: $searchText, prompt: "Search by name, brand or family")
             .sheet(isPresented: $showingAddPerfume) {
                 AddPerfumeView()
             }
@@ -67,7 +83,7 @@ struct DeckView: View {
     }
     private var perfumeListView: some View {
         List{
-            ForEach(perfumes) { perfume in
+            ForEach(filteredPerfumes) { perfume in
                 NavigationLink(destination: PerfumeDetailView(perfume: perfume)) {
                     PerfumeCardView(perfume: perfume)
                         .listRowInsets(EdgeInsets())
@@ -77,7 +93,7 @@ struct DeckView: View {
             .onDelete {indexSet in
                 for index in indexSet {
                     let perfume = perfumes[index]
-                    viewModel.confirmDelete(perfume, context: modelContext)
+                    viewModel.confirmDelete(filteredPerfumes[index], context: modelContext)
                 }
             }
         }
