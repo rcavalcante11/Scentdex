@@ -2,75 +2,88 @@ import SwiftUI
 import SwiftData
 
 struct PerfumeCardView: View {
-    
+
     // MARK: - Properties
     let perfume: Perfume
-    
+
     // MARK: - Body
     var body: some View {
+        ZStack(alignment: .bottom) {
+
         
-        Group {
-            if let imageUrl = perfume.imageUrl,
-               let url = URL(string: imageUrl) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    case .empty:
-                        imagePlaceholder
-                    case .failure:
-                        imagePlaceholder
-                    @unknown default:
-                        imagePlaceholder
-                    }
-                }
-            } else {
-                imagePlaceholder
-            }
-        }
-        .frame(height: 120)
-        .clipped()
-        
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(perfume.name)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                        .lineLimit(1)
+            backgroundView
+
+            
+            LinearGradient(
+                colors: [.clear, .black.opacity(0.8)],
+                startPoint: .center,
+                endPoint: .bottom
+            )
+
+            // Info em baixo
+            VStack(alignment: .leading, spacing: 4) {
+                Text(perfume.name)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+
+                HStack {
                     Text(perfume.brand)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.75))
+
+                    Spacer()
+
+                    Text(perfume.family.rawValue)
+                        .font(.caption2)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(.white.opacity(0.2))
+                        .foregroundStyle(.white)
+                        .clipShape(Capsule())
                 }
-                
-                Text(perfume.family.rawValue)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(perfume.family.color.opacity(0.2))
-                    .foregroundStyle(perfume.family.color)
-                    .clipShape(Capsule())
             }
             .padding(12)
         }
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
+        .frame(height: 180)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
     }
-    private var imagePlaceholder: some View {
-        ZStack {
-            Rectangle()
-                .fill(perfume.family.color.opacity(0.1))
-            Image(systemName: "flask")
-                .font(.system(size: 32))
-                .foregroundStyle(perfume.family.color.opacity(0.4))
+
+    // MARK: - Helpers
+    @ViewBuilder
+    private var backgroundView: some View {
+        if let imageUrl = perfume.imageUrl,
+           let url = URL(string: imageUrl) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .empty, .failure:
+                    familyBackground
+                @unknown default:
+                    familyBackground
+                }
+            }
+        } else {
+            familyBackground
         }
     }
-}   
+
+    private var familyBackground: some View {
+        ZStack {
+            perfume.family.color.opacity(0.3)
+            Image(systemName: "flask")
+                .font(.system(size: 48))
+                .foregroundStyle(perfume.family.color.opacity(0.4))
+        }
+        .background(perfume.family.color.opacity(0.1))
+    }
+}
 
 #Preview {
     PerfumeCardView(perfume: Perfume(
