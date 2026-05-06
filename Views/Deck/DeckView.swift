@@ -92,8 +92,7 @@ struct DeckView: View {
             }
             .onDelete {indexSet in
                 for index in indexSet {
-                    let perfume = perfumes[index]
-                    viewModel.confirmDelete(filteredPerfumes[index], context: modelContext)
+                    viewModel.confirmDelete(filteredPerfumes[index])
                 }
             }
         }

@@ -19,7 +19,7 @@ class DeckViewModel {
     var showingDeleteAlert = false
 
     // MARK: - intent
-    func confirmDelete(_ perfume: Perfume, context: ModelContext) {
+    func confirmDelete(_ perfume: Perfume) {
         perfumeToDelete = perfume
         showingDeleteAlert = true
         
