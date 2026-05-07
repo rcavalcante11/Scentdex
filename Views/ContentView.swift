@@ -17,6 +17,7 @@ struct ContentView: View {
                 scentAuraTab
             }
         }
+        .preferredColorScheme(.dark)
     }
     
     // MARK: - Subviews
