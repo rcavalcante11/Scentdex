@@ -17,6 +17,10 @@ class DeckViewModel {
     var perfumes: [Perfume] = []
     var perfumeToDelete: Perfume? = nil
     var showingDeleteAlert = false
+    
+    // MARK: - Search
+     var apiSearchResults: [FragranceResult] = []
+     var isSearchingAPI = false
 
     // MARK: - intent
     func confirmDelete(_ perfume: Perfume) {
@@ -29,5 +33,21 @@ class DeckViewModel {
         context.delete(perfume)
         perfumeToDelete = nil
         showingDeleteAlert = false
+    }
+    
+    @MainActor
+    func searchAPI(query: String) async {
+        guard query.count >= 2 else {
+            apiSearchResults = []
+            return
+        }
+        isSearchingAPI = true
+        do {
+            apiSearchResults = try await PerfumeService.shared.searchPerfumes(query: query)
+        } catch {
+            apiSearchResults = []
+        }
+        isSearchingAPI = false
+        
     }
 }
