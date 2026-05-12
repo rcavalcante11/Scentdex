@@ -21,15 +21,15 @@ extension Color {
 extension FragranceFamily {
     var color: Color {
         switch self {
-        case .woody:     return .purple
-        case .floral:    return .pink
-        case .oriental:  return .orange
-        case .fresh:     return .mint
-        case .citrus:    return .yellow
-        case .aquatic:   return .blue
-        case .gourmand:  return .purple
-        case .spicy:     return .red
-        case .herbal:    return .green
+            case .woody:     return Color(hex: "#8B5E3C") ?? .brown
+            case .floral:    return Color(hex: "#E8A0BF") ?? .pink
+            case .oriental:  return Color(hex: "#C9A84C") ?? .orange
+            case .fresh:     return .mint
+            case .citrus:    return Color(hex: "#F4A320") ?? .yellow
+            case .aquatic:   return Color(hex: "#0EA5E9") ?? .blue
+            case .gourmand:  return Color(hex: "#9B59B6") ?? .purple
+            case .spicy:     return Color(hex: "#C0392B") ?? .red
+            case .herbal:    return Color(hex: "#5D8A5E") ?? .green
         }
     }
 }

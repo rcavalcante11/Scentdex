@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct ScentProfile {
     
@@ -213,18 +214,11 @@ struct ScentProfile {
         }
     }
 
-    var auraColors: [String] {
-        switch dominantFamily {
-        case .woody:     return ["#7C3AED", "#92400E"]
-        case .floral:    return ["#DB2777", "#9D174D"]
-        case .oriental:  return ["#D97706", "#92400E"]
-        case .fresh:     return ["#0D9488", "#0369A1"]
-        case .citrus:    return ["#D97706", "#65A30D"]
-        case .aquatic:   return ["#0369A1", "#0D9488"]
-        case .gourmand:  return ["#7C3AED", "#DB2777"]
-        case .spicy:     return ["#DC2626", "#D97706"]
-        case .herbal:    return ["#65A30D", "#0D9488"]
+    var auraColors: [Color] {
+        if let second = secondFamily {
+            return [dominantFamily.color, second.color]
         }
+        return [dominantFamily.color, dominantFamily.color.opacity(0.5)]
     }
     
     // MARK: - Factory
