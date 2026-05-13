@@ -9,6 +9,9 @@ struct ContentView: View {
     //MARK: - Body
     var body: some View {
         TabView {
+            Tab("Feed", systemImage: "newspaper.fill") {
+                FeedView()
+                        }
             Tab ("My Deck", systemImage: "rectangle.stack.fill") {
                 DeckView()
             }
@@ -41,7 +44,7 @@ struct ContentView: View {
             Text("Your Aura is waiting")
                 .font(.title2)
                 .fontWeight(.semibold)
-                Text("Add at least one perfume to your deck to see your Scent Aura")
+            Text("Add at least one perfume to your deck to see your Scent Aura")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center )
