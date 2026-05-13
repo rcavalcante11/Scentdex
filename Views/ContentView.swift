@@ -2,21 +2,23 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @State private var selectedTab = 1
     
     // MARK: - Properties
     @Query private var perfumes: [Perfume]
     
     //MARK: - Body
     var body: some View {
-        TabView {
-            Tab("Feed", systemImage: "newspaper.fill") {
-                FeedView()
-                        }
-            Tab ("My Deck", systemImage: "rectangle.stack.fill") {
+        TabView(selection: $selectedTab) {
+            Tab("My Deck", systemImage: "rectangle.stack.fill", value: 0) {
                 DeckView()
             }
-            
-            Tab ("Scent Aura", systemImage: "sparkles") {
+
+            Tab("Feed", systemImage: "newspaper.fill", value: 1) {
+                FeedView()
+            }
+
+            Tab("Scent Aura", systemImage: "sparkles", value: 2) {
                 scentAuraTab
             }
         }
