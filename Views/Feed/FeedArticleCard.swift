@@ -11,8 +11,15 @@ struct FeedArticleCard: View {
     
     
     let article: FeedArticle
-    
+    @State private var showSafari = false
+
     var body: some View {
+        Button {
+                    if article.url != nil {
+                        showSafari = true
+                    }
+                } label: {
+                    
         HStack( spacing:16 ) {
             Text(article.emoji)
                 .font(.system(size: 32))
@@ -51,6 +58,15 @@ struct FeedArticleCard: View {
             .background(Color(.systemGray6).opacity(0.3))
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
+            .buttonStyle(.plain)
+                .sheet(isPresented: $showSafari) {
+                    if let url = article.url {
+                        SafariView(url: url)
+                            .ignoresSafeArea()
+                            }
+                        }
+                    }
+    
         private var categoryColor: Color {
             switch article.category {
             case .tip:        return .mint
