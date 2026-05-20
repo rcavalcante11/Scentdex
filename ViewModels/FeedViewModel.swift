@@ -48,9 +48,8 @@ class FeedViewModel {
     @MainActor
     private func loadArticles() async {
         let rssURLs = [
-            "https://www.basenotes.net/feed/",
-               "https://www.nowsmellthis.com/feed/",
-               "https://www.fragrantica.com/news/"
+            "https://cafleurebon.com/feed/",
+            "https://scenthound.wordpress.com/feed/"    
         ]
 
         var fetchedArticles: [FeedArticle] = []
