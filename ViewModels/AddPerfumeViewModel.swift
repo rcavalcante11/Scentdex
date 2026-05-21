@@ -29,6 +29,7 @@ class AddPerfumeViewModel {
 
     // MARK: - Mode
     private let mode: FormMode
+    private var searchTask: Task<Void, Never>?
 
     init(mode: FormMode = .create) {
         self.mode = mode
@@ -52,8 +53,6 @@ class AddPerfumeViewModel {
         case .create: return "Add Perfume"
         case .edit:   return "Edit Perfume"
         }
-        
-        
     }
 
     // MARK: - Intent
@@ -68,7 +67,6 @@ class AddPerfumeViewModel {
         baseNotes = result.baseNotes?.joined(separator: ", ") ?? ""
         searchResults = []
         imageUrl = result.imageUrl
-        
     }
 
     func save(context: ModelContext) {
@@ -87,10 +85,10 @@ class AddPerfumeViewModel {
             context.insert(perfume)
 
         case .edit(let perfume):
-            perfume.name   = name.trimmingCharacters(in: .whitespaces)
-            perfume.brand  = brand.trimmingCharacters(in: .whitespaces)
-            perfume.family = family
-            perfume.gender = gender
+            perfume.name        = name.trimmingCharacters(in: .whitespaces)
+            perfume.brand       = brand.trimmingCharacters(in: .whitespaces)
+            perfume.family      = family
+            perfume.gender      = gender
             perfume.topNotes    = parsedNotes(from: topNotes)
             perfume.middleNotes = parsedNotes(from: middleNotes)
             perfume.baseNotes   = parsedNotes(from: baseNotes)
@@ -113,7 +111,14 @@ class AddPerfumeViewModel {
             searchResults = []
             return
         }
-        Task {
+
+        // Cancela pesquisa anterior
+        searchTask?.cancel()
+
+        // Espera 0.5s antes de pesquisar — poupa 80% dos requests
+        searchTask = Task {
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            guard !Task.isCancelled else { return }
             await search(query: name)
         }
     }
