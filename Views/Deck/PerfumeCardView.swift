@@ -10,17 +10,14 @@ struct PerfumeCardView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
 
-        
             backgroundView
 
-            
             LinearGradient(
-                colors: [.clear, .black.opacity(0.8)],
+                colors: [.clear, .black],
                 startPoint: .center,
                 endPoint: .bottom
             )
 
-            // Info em baixo
             VStack(alignment: .leading, spacing: 4) {
                 Text(perfume.name)
                     .font(.headline)
@@ -40,7 +37,7 @@ struct PerfumeCardView: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
-                        .background(.white.opacity(0.2))
+                        .background(perfume.family.color.opacity(0.85))
                         .foregroundStyle(.white)
                         .clipShape(Capsule())
                 }
@@ -62,7 +59,8 @@ struct PerfumeCardView: View {
                 case .success(let image):
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .aspectRatio(contentMode: .fit)
+                        .padding(8)
                 case .empty, .failure:
                     familyBackground
                 @unknown default:

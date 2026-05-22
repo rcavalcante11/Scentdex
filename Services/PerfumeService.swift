@@ -47,7 +47,7 @@ class PerfumeService {
             }
 
             if let json = String(data: data, encoding: .utf8) {
-                print("📦 Response:", json.prefix(100))
+                print("📦 Full Response:", json)
             }
 
             guard let httpResponse = response as? HTTPURLResponse,

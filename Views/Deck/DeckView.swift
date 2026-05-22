@@ -80,7 +80,6 @@ struct DeckView: View {
 
     private var searchResultsView: some View {
         List {
-            
             if !filteredPerfumes.isEmpty {
                 Section("In Your Deck") {
                     ForEach(filteredPerfumes) { perfume in
@@ -98,7 +97,6 @@ struct DeckView: View {
                 }
             }
 
-            // API Search
             if isSearching {
                 Section("From Database") {
                     if viewModel.isSearchingAPI {
@@ -125,7 +123,27 @@ struct DeckView: View {
     }
 
     private func apiResultRow(_ result: FragranceResult) -> some View {
-        HStack {
+        HStack(spacing: 12) {
+            Group {
+                if let imageUrl = result.imageUrl,
+                   let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        default:
+                            placeholderBottle(family: result.family)
+                        }
+                    }
+                } else {
+                    placeholderBottle(family: result.family)
+                }
+            }
+            .frame(width: 40, height: 50)
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(result.name)
                     .font(.subheadline)
@@ -142,12 +160,9 @@ struct DeckView: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
                     .background(
-                        (FragranceFamily(rawValue: result.family.capitalized)?.color ?? .gray)
-                            .opacity(0.2)
+                        mapFamily(result.family).color.opacity(0.2)
                     )
-                    .foregroundStyle(
-                        FragranceFamily(rawValue: result.family.capitalized)?.color ?? .gray
-                    )
+                    .foregroundStyle(mapFamily(result.family).color)
                     .clipShape(Capsule())
 
                 Button("+ Add") {
@@ -161,21 +176,54 @@ struct DeckView: View {
         .padding(.vertical, 4)
     }
 
+    private func placeholderBottle(family: String) -> some View {
+        ZStack {
+            mapFamily(family).color.opacity(0.15)
+            Image(systemName: "flask")
+                .font(.system(size: 16))
+                .foregroundStyle(mapFamily(family).color.opacity(0.6))
+        }
+    }
+
     // MARK: - Helpers
     private func addFromAPI(_ result: FragranceResult) {
-        let family = FragranceFamily(rawValue: result.family.capitalized) ?? .floral
-        let gender = PerfumeGender(rawValue: result.gender ?? "") ?? .forWomenAndMen
         let perfume = Perfume(
             name: result.name,
             brand: result.brand,
-            family: family,
-            gender: gender,
-            topNotes: result.topNotes ?? [],
-            middleNotes: result.middleNotes ?? [],
-            baseNotes: result.baseNotes ?? [],
+            family: mapFamily(result.family),
+            gender: mapGender(result.gender ?? ""),
+            topNotes: result.generalNotes ?? [],
+            middleNotes: [],
+            baseNotes: [],
             imageUrl: result.imageUrl
         )
         modelContext.insert(perfume)
+    }
+
+    private func mapFamily(_ raw: String) -> FragranceFamily {
+        let lower = raw.lowercased()
+        switch lower {
+        case "woody", "wood":               return .woody
+        case "floral", "flower":            return .floral
+        case "oriental", "amber":           return .oriental
+        case "fresh", "aromatic":           return .fresh
+        case "citrus", "citric":            return .citrus
+        case "aquatic", "marine", "water":  return .aquatic
+        case "gourmand", "food":            return .gourmand
+        case "spicy", "spice":              return .spicy
+        case "herbal", "green", "fougere":  return .herbal
+        default:                            return .floral
+        }
+    }
+
+    private func mapGender(_ raw: String) -> PerfumeGender {
+        let lower = raw.lowercased()
+        switch lower {
+        case "men", "masculine", "for men":         return .forMen
+        case "women", "feminine", "for women":      return .forWomen
+        case "unisex", "for women and men", "both": return .forWomenAndMen
+        default:                                     return .forWomenAndMen
+        }
     }
 }
 
