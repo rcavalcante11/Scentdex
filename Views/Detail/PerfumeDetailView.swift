@@ -135,21 +135,70 @@ struct PerfumeDetailView: View {
     private func notePills(_ notes: [String], color: Color) -> some View {
         FlowLayout(spacing: 8) {
             ForEach(notes, id: \.self) { note in
-                Text(note)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(color.opacity(0.15))
-                    .foregroundStyle(color)
-                    .clipShape(Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(color.opacity(0.3), lineWidth: 1)
-                    )
+                notePill(note, color: color)
             }
         }
         .padding(.vertical, 4)
+    }
+
+    private func notePill(_ note: String, color: Color) -> some View {
+        VStack(spacing: 6) {
+            // Imagem circular
+            if let url = noteImageURL(for: note) {
+                AsyncImage(url: url) { phase in
+                    if case .success(let image) = phase {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 54, height: 54)
+                            .background(color.opacity(0.12))
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle()
+                                    .stroke(color.opacity(0.25), lineWidth: 1)
+                            )
+                    } else {
+                        Circle()
+                            .fill(color.opacity(0.12))
+                            .frame(width: 54, height: 54)
+                            .overlay(
+                                Circle()
+                                    .stroke(color.opacity(0.25), lineWidth: 1)
+                            )
+                    }
+                }
+            } else {
+                Circle()
+                    .fill(color.opacity(0.12))
+                    .frame(width: 54, height: 54)
+            }
+
+            // Nome da nota
+            Text(note)
+                .font(.caption2)
+                .fontWeight(.medium)
+                .foregroundStyle(color)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .frame(width: 64)
+        }
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Note Image URL
+    private func noteImageURL(for note: String) -> URL? {
+        // Capitaliza cada palavra e faz URL encoding
+        // Ex: "clary sage" → "Clary%20Sage.png"
+        let capitalized = note
+            .split(separator: " ")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst() }
+            .joined(separator: " ")
+
+        let encoded = capitalized
+            .addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)
+            ?? capitalized
+
+        return URL(string: "https://cdn.fragella.com/note_images/\(encoded).png")
     }
 }
 

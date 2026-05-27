@@ -73,7 +73,7 @@ struct ScentAuraView: View {
                                     .fontWeight(.semibold)
                                     .foregroundStyle(.white)
 
-                                HStack(spacing: 8) {
+                                FlowLayout(spacing: 8) {
                                     ForEach(profile.topNotes, id: \.self) { note in
                                         Text(note)
                                             .font(.caption)

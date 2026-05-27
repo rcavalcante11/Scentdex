@@ -38,6 +38,7 @@ struct DeckView: View {
                         showingAddPerfume = true
                     } label: {
                         Image(systemName: "plus")
+                            .foregroundStyle(.accent)
                     }
                 }
             }

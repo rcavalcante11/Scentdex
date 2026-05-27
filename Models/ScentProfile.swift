@@ -248,7 +248,7 @@ struct ScentProfile {
         // Top 3 most frequent notes
         let topNotes = noteCount
             .sorted { $0.value > $1.value }
-            .prefix(3)
+            .prefix(10)
             .map { $0.key.capitalized }
 
         return ScentProfile(

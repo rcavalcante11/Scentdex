@@ -1,35 +1,29 @@
-//
-//  RecommendationCarouselView.swift
-//  Scentdex
-//
-//  Created by macbook on 17/04/2026.
-//
-
 import SwiftUI
 import SwiftData
 
 struct RecommendationCarouselView: View {
-    
-    // MARK: -  Properties
+
+    // MARK: - Properties
     let profile: ScentProfile
-    @Query private var ownedPerfumes: [Perfume] 
+    @Query private var ownedPerfumes: [Perfume]
     @State private var viewModel = RecommendationViewModel()
     @State private var selectedFragrance: FragranceResult? = nil
-    
-    // MARK: -  Body
+
+    // MARK: - Body
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             headerView
             contentView
         }
-        
-        .task {
-            await viewModel.loadRecommendations(profile: profile,
+        .task(id: "\(profile.topNotes.joined())-\(profile.familyDistribution.values.reduce(0, +))") {
+            await viewModel.loadRecommendations(
+                profile: profile,
                 ownedPerfumes: ownedPerfumes
-                )
-            }
+            )
         }
-    
+    }
+
+    // MARK: - Subviews
     private var headerView: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("You might also like")
@@ -38,12 +32,10 @@ struct RecommendationCarouselView: View {
             Text("Based on your \(profile.profileTitle) profile")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            
-                
         }
         .padding(.horizontal, 24)
     }
-    
+
     private var contentView: some View {
         Group {
             switch viewModel.state {
@@ -54,16 +46,16 @@ struct RecommendationCarouselView: View {
             case .loaded(let perfumes):
                 carouselView(perfumes)
             case .empty:
-                EmptyView()
-                case .error:
-                EmptyView()
-                }
+                emptyView
+            case .error:
+                emptyView
             }
         }
-    
+    }
+
     private var loadingView: some View {
         HStack(spacing: 12) {
-            ForEach(0..<3,id: \.self) { _ in
+            ForEach(0..<3, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color.secondary.opacity(0.15))
                     .frame(width: 160, height: 200)
@@ -71,15 +63,14 @@ struct RecommendationCarouselView: View {
         }
         .padding(.horizontal, 24)
     }
-    
+
     private func carouselView(_ perfumes: [FragranceResult]) -> some View {
-        let limited = Array(perfumes.prefix(3))
+        let limited = Array(perfumes.prefix(5))
 
         return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 ForEach(Array(limited.enumerated()), id: \.element.id) { index, perfume in
-                    if index < 2 {
-                        // Cards 1 e 2 — tappable
+                    if index < 4 {
                         Button {
                             selectedFragrance = perfume
                         } label: {
@@ -87,7 +78,6 @@ struct RecommendationCarouselView: View {
                         }
                         .buttonStyle(.plain)
                     } else {
-                        // Card 3 — blur premium
                         RecommendationCardView(fragrance: perfume)
                             .blur(radius: 6)
                             .overlay {
@@ -119,14 +109,11 @@ struct RecommendationCarouselView: View {
             .presentationDragIndicator(.visible)
         }
     }
-    
+
     private var emptyView: some View {
         Text("No recommendations available yet")
             .font(.subheadline)
-            .foregroundColor(.secondary)
-            .padding(.horizontal,24)
-        
-            }
-        }
-
-
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 24)
+    }
+}
