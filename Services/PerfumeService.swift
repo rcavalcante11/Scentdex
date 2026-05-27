@@ -31,7 +31,7 @@ class PerfumeService {
     }
 
     // MARK: - Private
-    private func fetch<T: Codable>(from urlString: String) async throws -> [T] {
+    private func fetch<T: Decodable>(from urlString: String) async throws -> [T] {
         guard let url = URL(string: urlString) else {
             throw URLError(.badURL)
         }

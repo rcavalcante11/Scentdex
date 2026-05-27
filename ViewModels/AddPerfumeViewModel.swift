@@ -58,13 +58,18 @@ class AddPerfumeViewModel {
     // MARK: - Intent
     func selectResult(_ result: FragranceResult) {
         selectedResult = result
-        name = result.name
-        brand = result.brand
-        family = FragranceFamily(rawValue: result.family.capitalized) ?? .floral
-        gender = PerfumeGender(rawValue: result.gender ?? "") ?? .forWomenAndMen
-        topNotes = result.topNotes?.joined(separator: ", ") ?? ""
+        name   = result.name
+        brand  = result.brand
+        family = mapFamily(result.family)
+        gender = mapGender(result.gender ?? "")
+
+        // Usa notas separadas por camada se existirem, senão usa generalNotes em topNotes
+        topNotes    = result.topNotes?.joined(separator: ", ")
+                   ?? result.generalNotes?.joined(separator: ", ")
+                   ?? ""
         middleNotes = result.middleNotes?.joined(separator: ", ") ?? ""
-        baseNotes = result.baseNotes?.joined(separator: ", ") ?? ""
+        baseNotes   = result.baseNotes?.joined(separator: ", ") ?? ""
+
         searchResults = []
         imageUrl = result.imageUrl
     }
@@ -111,11 +116,7 @@ class AddPerfumeViewModel {
             searchResults = []
             return
         }
-
-        // Cancela pesquisa anterior
         searchTask?.cancel()
-
-        // Espera 0.5s antes de pesquisar — poupa 80% dos requests
         searchTask = Task {
             try? await Task.sleep(nanoseconds: 500_000_000)
             guard !Task.isCancelled else { return }
@@ -139,5 +140,56 @@ class AddPerfumeViewModel {
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
+    }
+
+    // MARK: - Mapping (espelho do DeckView)
+    private func mapFamily(_ raw: String) -> FragranceFamily {
+        let lower = raw.lowercased().trimmingCharacters(in: .whitespaces)
+        switch lower {
+        case "woody", "wood", "oud", "sandalwood",
+             "cedar", "vetiver", "patchouli":
+            return .woody
+        case "floral", "flower", "white floral",
+             "yellow floral", "rose", "powdery",
+             "musky", "aldehydic", "lactonic",
+             "iris", "violet", "tuberose":
+            return .floral
+        case "oriental", "amber", "balsamic",
+             "warm spicy", "tobacco", "leather",
+             "smoky", "animalic", "incense", "resinous":
+            return .oriental
+        case "fresh", "fruity", "tropical",
+             "light spicy", "soft spicy":
+            return .fresh
+        case "citrus", "citric", "lemon",
+             "bergamot", "orange", "grapefruit":
+            return .citrus
+        case "aquatic", "marine", "water",
+             "oceanic", "sea":
+            return .aquatic
+        case "gourmand", "sweet", "vanilla",
+             "chocolate", "caramel", "coffee",
+             "food", "honey":
+            return .gourmand
+        case "spicy", "spice", "fresh spicy",
+             "cinnamon", "pepper", "cardamom":
+            return .spicy
+        case "herbal", "green", "fougere",
+             "aromatic", "mossy", "earthy",
+             "conifer", "lavender", "mint":
+            return .herbal
+        default:
+            return .floral
+        }
+    }
+
+    private func mapGender(_ raw: String) -> PerfumeGender {
+        let lower = raw.lowercased().trimmingCharacters(in: .whitespaces)
+        switch lower {
+        case "men", "masculine", "for men":          return .forMen
+        case "women", "feminine", "for women":       return .forWomen
+        case "unisex", "for women and men", "both":  return .forWomenAndMen
+        default:                                      return .forWomenAndMen
+        }
     }
 }

@@ -154,14 +154,12 @@ struct DeckView: View {
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 4) {
-                Text(result.family.capitalized)
+                Text(mapFamily(result.family).rawValue)
                     .font(.caption2)
                     .fontWeight(.medium)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(
-                        mapFamily(result.family).color.opacity(0.2)
-                    )
+                    .background(mapFamily(result.family).color.opacity(0.2))
                     .foregroundStyle(mapFamily(result.family).color)
                     .clipShape(Capsule())
 
@@ -192,37 +190,81 @@ struct DeckView: View {
             brand: result.brand,
             family: mapFamily(result.family),
             gender: mapGender(result.gender ?? ""),
-            topNotes: result.generalNotes ?? [],
-            middleNotes: [],
-            baseNotes: [],
+            topNotes: result.topNotes ?? result.generalNotes ?? [],
+            middleNotes: result.middleNotes ?? [],
+            baseNotes: result.baseNotes ?? [],
             imageUrl: result.imageUrl
         )
         modelContext.insert(perfume)
     }
 
+    // MARK: - Mapping
     private func mapFamily(_ raw: String) -> FragranceFamily {
-        let lower = raw.lowercased()
+        let lower = raw.lowercased().trimmingCharacters(in: .whitespaces)
         switch lower {
-        case "woody", "wood":               return .woody
-        case "floral", "flower":            return .floral
-        case "oriental", "amber":           return .oriental
-        case "fresh", "aromatic":           return .fresh
-        case "citrus", "citric":            return .citrus
-        case "aquatic", "marine", "water":  return .aquatic
-        case "gourmand", "food":            return .gourmand
-        case "spicy", "spice":              return .spicy
-        case "herbal", "green", "fougere":  return .herbal
-        default:                            return .floral
+
+        // Woody
+        case "woody", "wood", "oud", "sandalwood",
+             "cedar", "vetiver", "patchouli":
+            return .woody
+
+        // Floral
+        case "floral", "flower", "white floral",
+             "yellow floral", "rose", "powdery",
+             "musky", "aldehydic", "lactonic", "iris",
+             "violet", "tuberose":
+            return .floral
+
+        // Oriental
+        case "oriental", "amber", "balsamic",
+             "warm spicy", "tobacco", "leather",
+             "smoky", "animalic", "incense", "resinous":
+            return .oriental
+
+        // Fresh
+        case "fresh", "fruity", "tropical",
+             "light spicy", "soft spicy":
+            return .fresh
+
+        // Citrus
+        case "citrus", "citric", "lemon",
+             "bergamot", "orange", "grapefruit":
+            return .citrus
+
+        // Aquatic
+        case "aquatic", "marine", "water",
+             "oceanic", "sea":
+            return .aquatic
+
+        // Gourmand
+        case "gourmand", "sweet", "vanilla",
+             "chocolate", "caramel", "coffee",
+             "food", "honey":
+            return .gourmand
+
+        // Spicy
+        case "spicy", "spice", "fresh spicy",
+             "cinnamon", "pepper", "cardamom":
+            return .spicy
+
+        // Herbal
+        case "herbal", "green", "fougere",
+             "aromatic", "mossy", "earthy",
+             "conifer", "lavender", "mint":
+            return .herbal
+
+        default:
+            return .floral
         }
     }
 
     private func mapGender(_ raw: String) -> PerfumeGender {
-        let lower = raw.lowercased()
+        let lower = raw.lowercased().trimmingCharacters(in: .whitespaces)
         switch lower {
-        case "men", "masculine", "for men":         return .forMen
-        case "women", "feminine", "for women":      return .forWomen
-        case "unisex", "for women and men", "both": return .forWomenAndMen
-        default:                                     return .forWomenAndMen
+        case "men", "masculine", "for men":          return .forMen
+        case "women", "feminine", "for women":       return .forWomen
+        case "unisex", "for women and men", "both":  return .forWomenAndMen
+        default:                                      return .forWomenAndMen
         }
     }
 }
