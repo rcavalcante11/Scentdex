@@ -25,13 +25,31 @@ struct RecommendationCarouselView: View {
 
     // MARK: - Subviews
     private var headerView: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("You might also like")
-                .font(.title3)
-                .fontWeight(.semibold)
-            Text("Based on your \(profile.profileTitle) profile")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("You might also like")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                Text("Based on your \(profile.profileTitle) profile")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Button {
+                Task {
+                    await viewModel.refresh(
+                        profile: profile,
+                        ownedPerfumes: ownedPerfumes
+                    )
+                }
+            } label: {
+                Image(systemName: "arrow.clockwise")
+                    .font(.subheadline)
+                    .foregroundStyle(.accent)
+            }
+            .disabled(viewModel.isLoading)
         }
         .padding(.horizontal, 24)
     }
