@@ -26,7 +26,19 @@ class PerfumeService {
 
     // MARK: - Match By Notes
     func searchByNotes(notes: String) async throws -> [FragranceResult] {
-        let endpoint = "\(baseURL)/fragrances/match?notes=\(notes.urlEncoded)&limit=6"
+        let endpoint = "\(baseURL)/fragrances/match?notes=\(notes.urlEncoded)&limit=10"
+        return try await fetch(from: endpoint)
+    }
+
+    // MARK: - Match By Notes Separados
+    func searchByNotesSeparated(top: String, middle: String) async throws -> [FragranceResult] {
+        let endpoint = "\(baseURL)/fragrances/match?top=\(top.urlEncoded)&middle=\(middle.urlEncoded)&limit=10"
+        return try await fetch(from: endpoint)
+    }
+
+    // MARK: - Match By Accords
+    func searchByAccords(accords: String) async throws -> [FragranceResult] {
+        let endpoint = "\(baseURL)/fragrances/match?accords=\(accords.urlEncoded)&limit=10"
         return try await fetch(from: endpoint)
     }
 
@@ -44,10 +56,6 @@ class PerfumeService {
 
             if let httpResponse = response as? HTTPURLResponse {
                 print("📡 Fragella status:", httpResponse.statusCode, urlString)
-            }
-
-            if let json = String(data: data, encoding: .utf8) {
-                print("📦 Full Response:", json)
             }
 
             guard let httpResponse = response as? HTTPURLResponse,

@@ -84,24 +84,34 @@ class RecommendationViewModel {
     }
 
     private func fetchCandidates(for profile: ScentProfile) async throws -> [FragranceResult] {
-        print("🔄 Refresh count: \(refreshCount), strategy: \(refreshCount % 3)")
         let notes = profile.topNotes
         guard !notes.isEmpty else {
             return try await PerfumeService.shared.searchPerfumes(query: profile.dominantFamily.rawValue)
         }
 
-        switch refreshCount % 3 {
+        switch refreshCount % 4 {
         case 0:
-            // Notas do início — mais frequentes
+            // Top notes mais frequentes
             let query = notes.prefix(4).joined(separator: ",")
             return try await PerfumeService.shared.searchByNotes(notes: query)
+
         case 1:
-            // Notas do meio
-            let mid = notes.dropFirst(3).prefix(4)
-            let query = mid.isEmpty ? notes.suffix(4).joined(separator: ",") : mid.joined(separator: ",")
-            return try await PerfumeService.shared.searchByNotes(notes: query)
+            // Accordes da familyDistribution — query mais rica e diferente
+            let accords = profile.familyDistribution
+                .sorted { $0.value > $1.value }
+                .prefix(3)
+                .map { "\($0.key.rawValue):100" }
+                .joined(separator: ",")
+            return try await PerfumeService.shared.searchByAccords(accords: accords)
+
+        case 2:
+            // Top e Middle notes separados
+            let top = notes.prefix(3).joined(separator: ",")
+            let mid = notes.dropFirst(3).prefix(3).joined(separator: ",")
+            return try await PerfumeService.shared.searchByNotesSeparated(top: top, middle: mid)
+
         default:
-            // Busca por família
+            // Busca por família dominante
             return try await PerfumeService.shared.searchPerfumes(query: profile.dominantFamily.rawValue)
         }
     }

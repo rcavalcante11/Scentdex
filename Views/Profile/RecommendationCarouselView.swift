@@ -123,7 +123,7 @@ struct RecommendationCarouselView: View {
                 fragrance: fragrance,
                 ownedPerfumes: ownedPerfumes
             )
-            .presentationDetents([.medium, .large])
+            .presentationDetents([ .large])
             .presentationDragIndicator(.visible)
         }
     }
