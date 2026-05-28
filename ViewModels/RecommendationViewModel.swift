@@ -19,6 +19,21 @@ class RecommendationViewModel {
         profile: ScentProfile,
         ownedPerfumes: [Perfume]
     ) async {
+        await load(profile: profile, ownedPerfumes: ownedPerfumes)
+    }
+
+    @MainActor
+    func refresh(profile: ScentProfile, ownedPerfumes: [Perfume]) async {
+        refreshCount += 1
+        await load(profile: profile, ownedPerfumes: ownedPerfumes)
+    }
+    
+    
+    @MainActor
+    private func load(
+        profile: ScentProfile,
+        ownedPerfumes: [Perfume]
+    ) async {
         state = .loading
         do {
             let results = try await fetchCandidates(for: profile)
@@ -34,12 +49,6 @@ class RecommendationViewModel {
             let dominantGender = calculateDominantGender(from: ownedPerfumes)
             state = useMockData(for: profile, dominantGender: dominantGender)
         }
-    }
-
-    @MainActor
-    func refresh(profile: ScentProfile, ownedPerfumes: [Perfume]) async {
-        refreshCount += 1
-        await loadRecommendations(profile: profile, ownedPerfumes: ownedPerfumes)
     }
 
     // MARK: - Gender Logic
@@ -75,6 +84,7 @@ class RecommendationViewModel {
     }
 
     private func fetchCandidates(for profile: ScentProfile) async throws -> [FragranceResult] {
+        print("🔄 Refresh count: \(refreshCount), strategy: \(refreshCount % 3)")
         let notes = profile.topNotes
         guard !notes.isEmpty else {
             return try await PerfumeService.shared.searchPerfumes(query: profile.dominantFamily.rawValue)
