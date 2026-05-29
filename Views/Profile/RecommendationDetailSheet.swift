@@ -3,7 +3,6 @@ import SwiftData
 
 struct RecommendationDetailSheet: View {
 
-    // MARK: - Properties
     let fragrance: FragranceResult
     let ownedPerfumes: [Perfume]
 
@@ -13,18 +12,24 @@ struct RecommendationDetailSheet: View {
 
     // MARK: - Computed
     private var commonNotes: [String] {
-        let deckNotes = Set(ownedPerfumes.flatMap { $0.allNotes }
-            .map { $0.lowercased() })
-        let fragranceNotes = (fragrance.topNotes ?? []) +
-                             (fragrance.middleNotes ?? []) +
-                             (fragrance.baseNotes ?? [])
-        return fragranceNotes.filter { deckNotes.contains($0.lowercased()) }
+        let deckNotes = Set(ownedPerfumes.flatMap { $0.allNotes }.map { $0.lowercased() })
+        return allNotes.filter { deckNotes.contains($0.lowercased()) }
+    }
+
+    private var otherNotes: [String] {
+        let common = Set(commonNotes.map { $0.lowercased() })
+        return allNotes.filter { !common.contains($0.lowercased()) }
     }
 
     private var allNotes: [String] {
         (fragrance.topNotes ?? []) +
         (fragrance.middleNotes ?? []) +
         (fragrance.baseNotes ?? [])
+    }
+
+    private var matchPercentage: Int {
+        guard !allNotes.isEmpty else { return 0 }
+        return Int(Double(commonNotes.count) / Double(allNotes.count) * 100)
     }
 
     private var resolvedFamily: FragranceFamily {
@@ -63,9 +68,7 @@ struct RecommendationDetailSheet: View {
                            let url = URL(string: imageUrl) {
                             AsyncImage(url: url) { phase in
                                 if case .success(let image) = phase {
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
+                                    image.resizable().aspectRatio(contentMode: .fit)
                                 } else {
                                     bottlePlaceholderContent
                                 }
@@ -109,75 +112,86 @@ struct RecommendationDetailSheet: View {
                 }
                 .padding(.horizontal, 24)
 
-                Divider()
-                    .padding(.vertical, 16)
+                Divider().padding(.vertical, 16)
 
-                // Matches your collection
+                // Conexão com o perfil
                 if !commonNotes.isEmpty {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Label("Matches your collection", systemImage: "checkmark.circle.fill")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.green)
+                    VStack(alignment: .leading, spacing: 12) {
 
-                        FlowLayout(spacing: 8) {
+                        HStack {
+                            Text("Conexão com o seu perfil")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(matchPercentage)%")
+                                .font(.subheadline)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.green)
+                        }
+
+                        Text("Notas que combinam com você")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        // Barra de progresso
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(Color.secondary.opacity(0.15))
+                                    .frame(height: 4)
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(Color.green)
+                                    .frame(width: geo.size.width * CGFloat(matchPercentage) / 100, height: 4)
+                            }
+                        }
+                        .frame(height: 4)
+
+                        FlowLayout(spacing: 16) {
                             ForEach(commonNotes, id: \.self) { note in
-                                Text(note)
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.green.opacity(0.12))
-                                    .foregroundStyle(.green)
-                                    .clipShape(Capsule())
-                                    .overlay(
-                                        Capsule()
-                                            .stroke(Color.green.opacity(0.3), lineWidth: 1)
-                                    )
+                                noteCircle(note, tint: .green)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(16)
+                    .background(Color.green.opacity(0.06))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.green.opacity(0.2), lineWidth: 1)
+                    )
+                    .padding(.horizontal, 24)
+
+                    if !otherNotes.isEmpty {
+                        Divider().padding(.vertical, 16)
+                    }
+                }
+
+                // Outras notas
+                if !otherNotes.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Outras notas deste perfume")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+
+                        FlowLayout(spacing: 16) {
+                            ForEach(otherNotes, id: \.self) { note in
+                                noteCircle(note, tint: .secondary)
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(.horizontal, 24)
-
-                    Divider()
-                        .padding(.vertical, 16)
-                }
-
-                // Notes com imagens circulares
-                if !allNotes.isEmpty {
+                } else if commonNotes.isEmpty && !allNotes.isEmpty {
+                    // Sem notas em comum — mostra todas neutras
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Notes")
-                            .font(.caption)
+                        Text("Notas")
+                            .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.secondary)
 
                         FlowLayout(spacing: 16) {
                             ForEach(allNotes, id: \.self) { note in
-                                VStack(spacing: 4) {
-                                    if let url = noteImageURL(for: note) {
-                                        AsyncImage(url: url) { phase in
-                                            if case .success(let image) = phase {
-                                                image
-                                                    .resizable()
-                                                    .aspectRatio(contentMode: .fit)
-                                                    .frame(width: 44, height: 44)
-                                                    .background(Color.secondary.opacity(0.1))
-                                                    .clipShape(Circle())
-                                            } else {
-                                                Circle()
-                                                    .fill(Color.secondary.opacity(0.1))
-                                                    .frame(width: 44, height: 44)
-                                            }
-                                        }
-                                    }
-                                    Text(note)
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                        .multilineTextAlignment(.center)
-                                        .frame(width: 56)
-                                        .lineLimit(2)
-                                }
+                                noteCircle(note, tint: .secondary)
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -224,6 +238,34 @@ struct RecommendationDetailSheet: View {
         }
     }
 
+    // MARK: - Note Circle
+    private func noteCircle(_ note: String, tint: Color) -> some View {
+        VStack(spacing: 4) {
+            if let url = noteImageURL(for: note) {
+                AsyncImage(url: url) { phase in
+                    if case .success(let image) = phase {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 44, height: 44)
+                            .background(tint.opacity(0.12))
+                            .clipShape(Circle())
+                    } else {
+                        Circle()
+                            .fill(tint.opacity(0.12))
+                            .frame(width: 44, height: 44)
+                    }
+                }
+            }
+            Text(note)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(width: 56)
+                .lineLimit(2)
+        }
+    }
+
     // MARK: - Placeholder
     private var bottlePlaceholderContent: some View {
         Image(systemName: "flask")
@@ -245,9 +287,7 @@ struct RecommendationDetailSheet: View {
         )
         modelContext.insert(perfume)
         withAnimation { added = true }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-            dismiss()
-        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { dismiss() }
     }
 
     private func mapGender(_ raw: String) -> PerfumeGender {
