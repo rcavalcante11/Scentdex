@@ -119,7 +119,7 @@ struct RecommendationDetailSheet: View {
                     VStack(alignment: .leading, spacing: 12) {
 
                         HStack {
-                            Text("Conexão com o seu perfil")
+                            Text("Profile match")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                             Spacer()
@@ -129,7 +129,7 @@ struct RecommendationDetailSheet: View {
                                 .foregroundStyle(.green)
                         }
 
-                        Text("Notas que combinam com você")
+                        Text("Notes that match your collection")
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
@@ -170,7 +170,7 @@ struct RecommendationDetailSheet: View {
                 // Outras notas
                 if !otherNotes.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Outras notas deste perfume")
+                        Text("Other notes")
                             .font(.subheadline)
                             .fontWeight(.semibold)
 
