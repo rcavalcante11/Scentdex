@@ -124,16 +124,21 @@ struct DeckView: View {
     }
 
     private func apiResultRow(_ result: FragranceResult) -> some View {
-        HStack(spacing: 12) {
+        print("🖼 imageUrl:", result.imageUrl ?? "nil")
+        print("🖼 imageUrlStandard:", result.imageUrlStandard ?? "nil")
+        print("🖼 bestImageUrl:", result.bestImageUrl ?? "nil")
+        
+        return HStack(spacing: 12) {
             Group {
-                if let imageUrl = result.imageUrl,
+                if let imageUrl = result.bestImageUrl,
                    let url = URL(string: imageUrl) {
                     AsyncImage(url: url) { phase in
                         switch phase {
                         case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
+                            image.resizable().aspectRatio(contentMode: .fit)
+                        case .failure(let error):
+                            let _ = print("❌ Image failed:", error.localizedDescription)
+                            placeholderBottle(family: result.family)
                         default:
                             placeholderBottle(family: result.family)
                         }
@@ -194,7 +199,7 @@ struct DeckView: View {
             topNotes: result.topNotes ?? result.generalNotes ?? [],
             middleNotes: result.middleNotes ?? [],
             baseNotes: result.baseNotes ?? [],
-            imageUrl: result.imageUrl
+            imageUrl: result.bestImageUrl
         )
         modelContext.insert(perfume)
     }

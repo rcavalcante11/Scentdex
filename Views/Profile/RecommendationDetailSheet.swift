@@ -64,7 +64,7 @@ struct RecommendationDetailSheet: View {
                 // Header
                 HStack(alignment: .center, spacing: 16) {
                     Group {
-                        if let imageUrl = fragrance.imageUrl,
+                        if let imageUrl = fragrance.bestImageUrl,
                            let url = URL(string: imageUrl) {
                             AsyncImage(url: url) { phase in
                                 if case .success(let image) = phase {
@@ -222,7 +222,7 @@ struct RecommendationDetailSheet: View {
             .frame(maxWidth: .infinity)
         }
         .background {
-            if let imageUrl = fragrance.imageUrl,
+            if let imageUrl = fragrance.bestImageUrl,
                let url = URL(string: imageUrl) {
                 AsyncImage(url: url) { phase in
                     if case .success(let image) = phase {
@@ -283,7 +283,9 @@ struct RecommendationDetailSheet: View {
             topNotes: fragrance.topNotes ?? [],
             middleNotes: fragrance.middleNotes ?? [],
             baseNotes: fragrance.baseNotes ?? [],
-            imageUrl: fragrance.imageUrl
+            imageUrl: fragrance.bestImageUrl,
+            
+            
         )
         modelContext.insert(perfume)
         withAnimation { added = true }

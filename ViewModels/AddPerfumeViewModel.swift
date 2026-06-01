@@ -17,7 +17,7 @@ class AddPerfumeViewModel {
     var brand: String = ""
     var family: FragranceFamily = .floral
     var gender: PerfumeGender = .forWomenAndMen
-    var topNotes: String = ""
+    var topNotes: String = "" 
     var middleNotes: String = ""
     var baseNotes: String = ""
 
@@ -71,7 +71,7 @@ class AddPerfumeViewModel {
         baseNotes   = result.baseNotes?.joined(separator: ", ") ?? ""
 
         searchResults = []
-        imageUrl = result.imageUrl
+        imageUrl = result.bestImageUrl
     }
 
     func save(context: ModelContext) {

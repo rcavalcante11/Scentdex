@@ -11,7 +11,7 @@ struct RecommendationCardView: View {
 
           
             ZStack {
-                if let imageUrl = fragrance.imageUrl,
+                if let imageUrl = fragrance.bestImageUrl,
                    let url = URL(string: imageUrl) {
                     AsyncImage(url: url) { phase in
                         if case .success(let image) = phase {

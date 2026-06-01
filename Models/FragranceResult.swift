@@ -11,6 +11,7 @@ struct FragranceResult: Decodable, Identifiable {
     let baseNotes: [String]?
     let gender: String?
     let imageUrl: String?
+    let imageUrlStandard: String?
 
     // MARK: - Init interno (mock data, RecommendationViewModel, etc.)
     init(id: String, name: String, brand: String, family: String,
@@ -26,6 +27,7 @@ struct FragranceResult: Decodable, Identifiable {
         self.generalNotes = (topNotes ?? []) + (middleNotes ?? []) + (baseNotes ?? [])
         self.gender = gender
         self.imageUrl = imageUrl
+        self.imageUrlStandard = nil 
     }
 
     // MARK: - Init da API Fragella
@@ -35,6 +37,7 @@ struct FragranceResult: Decodable, Identifiable {
         brand    = try container.decode(String.self, forKey: .brand)
         gender   = try? container.decode(String.self, forKey: .gender)
         imageUrl = try? container.decode(String.self, forKey: .imageUrl)
+        imageUrlStandard = try? container.decode(String.self, forKey: .imageUrlStandard)
 
         // Notas separadas por camada
         let notesObj = try? container.decode(NotesObject.self, forKey: .notes)
@@ -60,6 +63,7 @@ struct FragranceResult: Decodable, Identifiable {
         case generalNotes = "General Notes"
         case mainAccords  = "Main Accords Percentage"
         case notes        = "Notes"
+        case imageUrlStandard = "Image URL"
     }
 
     // MARK: - Helpers
@@ -72,6 +76,11 @@ struct FragranceResult: Decodable, Identifiable {
             }
         }
         return accords.keys.first?.lowercased() ?? "floral"
+    }
+    var bestImageUrl: String? {
+        if let url = imageUrlStandard, !url.isEmpty { return url }
+        if let url = imageUrl, !url.isEmpty { return url }
+        return nil
     }
 }
 
@@ -91,3 +100,5 @@ private struct NotesObject: Codable {
 private struct NoteItem: Codable {
     let name: String
 }
+
+
