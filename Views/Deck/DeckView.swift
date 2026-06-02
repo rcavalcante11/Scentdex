@@ -124,9 +124,6 @@ struct DeckView: View {
     }
 
     private func apiResultRow(_ result: FragranceResult) -> some View {
-        print("🖼 imageUrl:", result.imageUrl ?? "nil")
-        print("🖼 imageUrlStandard:", result.imageUrlStandard ?? "nil")
-        print("🖼 bestImageUrl:", result.bestImageUrl ?? "nil")
         
         return HStack(spacing: 12) {
             Group {
@@ -136,9 +133,6 @@ struct DeckView: View {
                         switch phase {
                         case .success(let image):
                             image.resizable().aspectRatio(contentMode: .fit)
-                        case .failure(let error):
-                            let _ = print("❌ Image failed:", error.localizedDescription)
-                            placeholderBottle(family: result.family)
                         default:
                             placeholderBottle(family: result.family)
                         }

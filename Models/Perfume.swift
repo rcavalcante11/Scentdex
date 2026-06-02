@@ -20,6 +20,7 @@ class Perfume {
     var baseNotes: [String]
     var dateAdded: Date
     var imageUrl: String?
+    var price: String?
     
     
     init(
@@ -32,7 +33,8 @@ class Perfume {
         middleNotes: [String] = [],
         baseNotes: [String] = [],
         dateAdded: Date = Date(),
-        imageUrl: String? = nil
+        imageUrl: String? = nil,
+        price: String? = nil
         
     ) {
         self.id = id
@@ -45,6 +47,7 @@ class Perfume {
         self.baseNotes = baseNotes
         self.dateAdded = dateAdded
         self.imageUrl = imageUrl
+        self.price = price
     }
 
     var allNotes: [String] {
