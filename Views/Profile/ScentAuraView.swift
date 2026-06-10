@@ -5,6 +5,7 @@ struct ScentAuraView: View {
     // MARK: - Properties
     let profile: ScentProfile
     @State private var animate = false
+    @State private var viewModel = ScentAuraViewModel()
 
     // MARK: - Body
     var body: some View {
@@ -14,14 +15,12 @@ struct ScentAuraView: View {
                 ZStack(alignment: .bottom) {
                     blobsLayer
 
-                    // Gradiente do topo
                     LinearGradient(
                         colors: [.black.opacity(0.3), .clear],
                         startPoint: .top,
                         endPoint: .center
                     )
 
-                    // Gradiente do fundo — cobre blobs completamente
                     VStack {
                         Spacer()
                         LinearGradient(
@@ -32,7 +31,6 @@ struct ScentAuraView: View {
                         .frame(height: 200)
                     }
 
-                    // Conteúdo sobre os blobs
                     VStack(alignment: .leading, spacing: 0) {
                         Spacer()
 
@@ -60,11 +58,26 @@ struct ScentAuraView: View {
                             .padding(.vertical, 24)
                             .padding(.horizontal, 28)
 
-                        Text(profile.profileDescription)
-                            .font(.body)
-                            .foregroundStyle(.white.opacity(0.75))
-                            .lineSpacing(6)
-                            .padding(.horizontal, 28)
+                        Group {
+                            if viewModel.isLoading {
+                                HStack(spacing: 8) {
+                                    ProgressView()
+                                        .scaleEffect(0.7)
+                                        .tint(.white.opacity(0.5))
+                                    Text("Reading your collection...")
+                                        .font(.caption)
+                                        .foregroundStyle(.white.opacity(0.4))
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .frame(height: 60)
+                            } else {
+                                Text(viewModel.description)
+                                    .font(.body)
+                                    .foregroundStyle(.white.opacity(0.75))
+                                    .lineSpacing(6)
+                            }
+                        }
+                        .padding(.horizontal, 28)
 
                         if !profile.topNotes.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
@@ -94,7 +107,6 @@ struct ScentAuraView: View {
                 }
                 .frame(minHeight: 700)
 
-                // Collection breakdown e recomendações
                 VStack(alignment: .leading, spacing: 24) {
                     familyDistributionSection
                     RecommendationCarouselView(profile: profile)
@@ -104,7 +116,10 @@ struct ScentAuraView: View {
             }
         }
         .ignoresSafeArea(edges: .top)
-        .onAppear { animate = true }
+        .onAppear {
+            animate = true
+            Task { await viewModel.generateDescription(for: profile) }
+        }
         .background(Color.black)
     }
 
@@ -228,6 +243,18 @@ struct ScentAuraView: View {
             .woody: 3,
             .oriental: 2,
             .fresh: 1
+        ],
+        familyScores: [
+            .woody: 12.0,
+            .oriental: 8.0,
+            .fresh: 3.0
+        ],
+        topAccords: [
+            AccordScore(name: "woody", score: 9, family: .woody),
+            AccordScore(name: "oud", score: 6, family: .woody),
+            AccordScore(name: "amber", score: 5, family: .oriental),
+            AccordScore(name: "spicy", score: 3, family: .spicy),
+            AccordScore(name: "earthy", score: 2, family: .herbal)
         ]
     ))
 }

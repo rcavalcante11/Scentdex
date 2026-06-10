@@ -20,6 +20,7 @@ class AddPerfumeViewModel {
     var topNotes: String = "" 
     var middleNotes: String = ""
     var baseNotes: String = ""
+    var accordsData: String? = nil
 
     // MARK: - Search
     var searchResults: [FragranceResult] = []
@@ -62,6 +63,8 @@ class AddPerfumeViewModel {
         brand  = result.brand
         family = mapFamily(result.family)
         gender = mapGender(result.gender ?? "")
+        imageUrl = result.bestImageUrl
+        accordsData = result.accordsJSON
 
         // Usa notas separadas por camada se existirem, senão usa generalNotes em topNotes
         topNotes    = result.topNotes?.joined(separator: ", ")
@@ -85,7 +88,8 @@ class AddPerfumeViewModel {
                 topNotes: parsedNotes(from: topNotes),
                 middleNotes: parsedNotes(from: middleNotes),
                 baseNotes: parsedNotes(from: baseNotes),
-                imageUrl: imageUrl
+                imageUrl: imageUrl,
+                accordsData: accordsData
             )
             context.insert(perfume)
 

@@ -12,6 +12,7 @@ class PerfumeService {
     }
 
     // MARK: - Search
+    
     func searchPerfumes(query: String) async throws -> [FragranceResult] {
         guard !query.isEmpty else { return [] }
         let endpoint = "\(baseURL)/fragrances?search=\(query.urlEncoded)&limit=10"
@@ -57,7 +58,9 @@ class PerfumeService {
             if let httpResponse = response as? HTTPURLResponse {
                 print("📡 Fragella status:", httpResponse.statusCode, urlString)
             }
-
+            if let json = String(data: data, encoding: .utf8) {
+                print("📦 Response:", json)
+            }
 
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {

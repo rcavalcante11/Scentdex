@@ -1,15 +1,9 @@
-
-
 import Foundation
 import SwiftData
-// Note: Modelled as a class (not struct) as required by SwiftData.
-// Notes stored as separate String arrays for MVP clarity.
-// Refactor to [Note] with a NoteLayer enum if per-note
-// metadata is needed in future.
 
 @Model
 class Perfume {
-    
+
     var id: UUID
     var name: String
     var brand: String
@@ -21,8 +15,8 @@ class Perfume {
     var dateAdded: Date
     var imageUrl: String?
     var price: String?
-    
-    
+    var accordsData: String?  // JSON: {"woody":"Dominant","oud":"Prominent",...}
+
     init(
         id: UUID = UUID(),
         name: String,
@@ -34,8 +28,8 @@ class Perfume {
         baseNotes: [String] = [],
         dateAdded: Date = Date(),
         imageUrl: String? = nil,
-        price: String? = nil
-        
+        price: String? = nil,
+        accordsData: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -48,11 +42,21 @@ class Perfume {
         self.dateAdded = dateAdded
         self.imageUrl = imageUrl
         self.price = price
+        self.accordsData = accordsData
     }
 
     var allNotes: [String] {
-           topNotes + middleNotes + baseNotes
-       }
+        topNotes + middleNotes + baseNotes
+    }
+
+    // Converte accordsData JSON → [String: String]
+    var accords: [String: String] {
+        guard let data = accordsData?.data(using: .utf8),
+              let dict = try? JSONDecoder().decode([String: String].self, from: data)
+        else { return [:] }
+        return dict
+    }
+
     // MARK: - Sample Data
     static var sampleData: [Perfume] {
         [
@@ -63,7 +67,8 @@ class Perfume {
                 gender: .forMen,
                 topNotes: ["Bergamot", "Lemon"],
                 middleNotes: ["Ginger", "Nutmeg"],
-                baseNotes: ["Sandalwood", "Cedar"]
+                baseNotes: ["Sandalwood", "Cedar"],
+                accordsData: "{\"woody\":\"Dominant\",\"aromatic\":\"Prominent\",\"fresh\":\"Moderate\"}"
             ),
             Perfume(
                 name: "Sauvage",
@@ -72,7 +77,8 @@ class Perfume {
                 gender: .forMen,
                 topNotes: ["Bergamot"],
                 middleNotes: ["Pepper", "Lavender"],
-                baseNotes: ["Ambroxan", "Cedar"]
+                baseNotes: ["Ambroxan", "Cedar"],
+                accordsData: "{\"fresh spicy\":\"Dominant\",\"aromatic\":\"Prominent\",\"woody\":\"Moderate\"}"
             ),
             Perfume(
                 name: "Black Opium",
@@ -81,7 +87,8 @@ class Perfume {
                 gender: .forWomen,
                 topNotes: ["Pink Pepper", "Orange Blossom"],
                 middleNotes: ["Coffee", "Jasmine"],
-                baseNotes: ["Vanilla", "Patchouli"]
+                baseNotes: ["Vanilla", "Patchouli"],
+                accordsData: "{\"sweet\":\"Dominant\",\"gourmand\":\"Dominant\",\"coffee\":\"Prominent\"}"
             ),
             Perfume(
                 name: "Light Blue",
@@ -90,7 +97,8 @@ class Perfume {
                 gender: .forWomenAndMen,
                 topNotes: ["Sicilian Lemon", "Apple"],
                 middleNotes: ["Bamboo", "Jasmine"],
-                baseNotes: ["Cedar", "Musk"]
+                baseNotes: ["Cedar", "Musk"],
+                accordsData: "{\"citrus\":\"Dominant\",\"fresh\":\"Prominent\",\"musky\":\"Moderate\"}"
             )
         ]
     }

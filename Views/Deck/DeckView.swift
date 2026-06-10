@@ -193,9 +193,13 @@ struct DeckView: View {
             topNotes: result.topNotes ?? result.generalNotes ?? [],
             middleNotes: result.middleNotes ?? [],
             baseNotes: result.baseNotes ?? [],
-            imageUrl: result.bestImageUrl
+            imageUrl: result.bestImageUrl,
+            price: result.price,
+            accordsData: result.accordsJSON
         )
         modelContext.insert(perfume)
+        searchText = ""
+        viewModel.apiSearchResults = []
     }
 
     // MARK: - Mapping
@@ -223,8 +227,8 @@ struct DeckView: View {
 
         // Fresh
         case "fresh", "fruity", "tropical",
-             "light spicy", "soft spicy":
-            return .fresh
+                 "light spicy", "soft spicy":
+                return .fresh
 
         // Citrus
         case "citrus", "citric", "lemon",

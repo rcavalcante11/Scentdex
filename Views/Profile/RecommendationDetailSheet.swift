@@ -284,6 +284,7 @@ struct RecommendationDetailSheet: View {
             middleNotes: fragrance.middleNotes ?? [],
             baseNotes: fragrance.baseNotes ?? [],
             imageUrl: fragrance.bestImageUrl,
+            accordsData: fragrance.accordsJSON
             
             
         )
