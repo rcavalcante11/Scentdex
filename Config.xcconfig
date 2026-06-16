@@ -8,5 +8,6 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-FRAGELLA_API_KEY = eb0b93bd39ecd14482a5d9889ad8952104369f40325ee38dbcc40b964d526590
+FRAGELLA_API_KEY = 073b82a1bd0c2f2f380c11014bae5517764625aff4084a3c784f4c742e30e1fa
+
 

@@ -71,12 +71,13 @@ struct ScentAuraView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .frame(height: 60)
                             } else {
-                                Text(viewModel.description)
+                                Text(parseMarkdown(viewModel.description))
                                     .font(.body)
                                     .foregroundStyle(.white.opacity(0.75))
                                     .lineSpacing(6)
                             }
                         }
+                        .padding(.horizontal, 28)
                         .padding(.horizontal, 28)
 
                         if !profile.topNotes.isEmpty {
@@ -218,6 +219,11 @@ struct ScentAuraView: View {
             BlobConfig(color: c2.opacity(0.6), size: 200, fromX: -60,  fromY: 90,   toX: 70,   toY: -50,  toScale: 1.3,  duration: 2.4, delay: 0.5),
             BlobConfig(color: c1.opacity(0.4), size: 160, fromX: 0,    fromY: -50,  toX: -30,  toY: 80,   toScale: 0.9,  duration: 3.6, delay: 1.2)
         ]
+        
+        
+    }
+    private func parseMarkdown(_ text: String) -> AttributedString {
+        (try? AttributedString(markdown: text)) ?? AttributedString(text)
     }
 
     // MARK: - BlobConfig

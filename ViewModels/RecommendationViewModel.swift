@@ -84,38 +84,43 @@ class RecommendationViewModel {
     }
 
     private func fetchCandidates(for profile: ScentProfile) async throws -> [FragranceResult] {
-        let notes = profile.topNotes
-        guard !notes.isEmpty else {
-            return try await PerfumeService.shared.searchPerfumes(query: profile.dominantFamily.rawValue)
-        }
+        let topAccords = profile.topAccords
+        let topNotes = profile.topNotes
 
         switch refreshCount % 4 {
         case 0:
-            // Top notes mais frequentes
-            let query = notes.prefix(4).joined(separator: ",")
-            return try await PerfumeService.shared.searchByNotes(notes: query)
-
-        case 1:
-            // Accordes da familyDistribution — query mais rica e diferente
-            let accords = profile.familyDistribution
-                .sorted { $0.value > $1.value }
-                .prefix(3)
-                .map { "\($0.key.rawValue):100" }
+            
+            guard !topAccords.isEmpty else {
+                return try await PerfumeService.shared.searchPerfumes(query: profile.dominantFamily.rawValue)
+            }
+            let accords = topAccords.prefix(3)
+                .map { "\($0.name.capitalized):\(Int($0.score * 10))" }
                 .joined(separator: ",")
             return try await PerfumeService.shared.searchByAccords(accords: accords)
 
+        case 1:
+            
+            guard !topNotes.isEmpty else {
+                return try await PerfumeService.shared.searchPerfumes(query: profile.dominantFamily.rawValue)
+            }
+            let query = topNotes.prefix(4).joined(separator: ",")
+            return try await PerfumeService.shared.searchByNotes(notes: query)
+
         case 2:
-            // Top e Middle notes separados
-            let top = notes.prefix(3).joined(separator: ",")
-            let mid = notes.dropFirst(3).prefix(3).joined(separator: ",")
-            return try await PerfumeService.shared.searchByNotesSeparated(top: top, middle: mid)
+            
+            guard topAccords.count > 3 else {
+                return try await PerfumeService.shared.searchPerfumes(query: profile.dominantFamily.rawValue)
+            }
+            let secondaryAccords = topAccords.dropFirst(3).prefix(3)
+                .map { "\($0.name.capitalized):\(Int($0.score * 10))" }
+                .joined(separator: ",")
+            return try await PerfumeService.shared.searchByAccords(accords: secondaryAccords)
 
         default:
-            // Busca por família dominante
+           
             return try await PerfumeService.shared.searchPerfumes(query: profile.dominantFamily.rawValue)
         }
     }
-
     // MARK: - Mock
     private func useMockData(for profile: ScentProfile, dominantGender: PerfumeGender) -> RecommendationState {
         let mock = mockResults(for: profile.dominantFamily)
