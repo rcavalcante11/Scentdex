@@ -1,10 +1,3 @@
-//
-//  ScentAuraViewModel.swift
-//  Scentdex
-//
-//  Created by macbook on 08/06/2026.
-//
-
 import Foundation
 import Observation
 
@@ -12,6 +5,7 @@ import Observation
 class ScentAuraViewModel {
 
     // MARK: - Properties
+    private(set) var generatedLabel: String = ""
     private(set) var description: String = ""
     private(set) var isLoading: Bool = false
 
@@ -20,18 +14,19 @@ class ScentAuraViewModel {
     func generateDescription(for profile: ScentProfile) async {
         guard description.isEmpty else { return }
         isLoading = true
-        description = await fetchDescription(for: profile) ?? fallbackDescription(for: profile)
+        let result = await fetchProfile(for: profile)
+        generatedLabel = result.label
+        description = result.description
         isLoading = false
     }
 
     // MARK: - Private
-    private func fetchDescription(for profile: ScentProfile) async -> String? {
+    private func fetchProfile(for profile: ScentProfile) async -> (label: String, description: String) {
         print("🧠 Calling Claude API...")
         let prompt = buildPrompt(for: profile)
 
         guard let url = URL(string: "https://api.anthropic.com/v1/messages") else {
-            print("🧠 Invalid URL")
-            return nil
+            return fallback(for: profile)
         }
 
         var request = URLRequest(url: url)
@@ -43,14 +38,11 @@ class ScentAuraViewModel {
         let body: [String: Any] = [
             "model": "claude-sonnet-4-6",
             "max_tokens": 1000,
-            "messages": [
-                ["role": "user", "content": prompt]
-            ]
+            "messages": [["role": "user", "content": prompt]]
         ]
 
         guard let httpBody = try? JSONSerialization.data(withJSONObject: body) else {
-            print("🧠 Failed to serialize body")
-            return nil
+            return fallback(for: profile)
         }
         request.httpBody = httpBody
 
@@ -61,22 +53,37 @@ class ScentAuraViewModel {
                 print("🧠 Status:", httpResponse.statusCode)
             }
 
-            if let raw = String(data: data, encoding: .utf8) {
-                print("🧠 Response:", raw.prefix(300))
-            }
-
             guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let content = json["content"] as? [[String: Any]],
                   let text = content.first?["text"] as? String
             else {
                 print("🧠 Failed to parse response")
-                return nil
+                return fallback(for: profile)
             }
 
-            return text.trimmingCharacters(in: .whitespacesAndNewlines)
+            print("🧠 Response:", text.prefix(200))
+
+            // Parse JSON response
+            let clean = text
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .replacingOccurrences(of: "```json", with: "")
+                .replacingOccurrences(of: "```", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard let jsonData = clean.data(using: .utf8),
+                  let parsed = try? JSONSerialization.jsonObject(with: jsonData) as? [String: String],
+                  let label = parsed["label"],
+                  let desc = parsed["description"]
+            else {
+                print("🧠 Failed to parse JSON")
+                return fallback(for: profile)
+            }
+
+            return (label: label, description: desc)
+
         } catch {
             print("🧠 Error:", error.localizedDescription)
-            return nil
+            return fallback(for: profile)
         }
     }
 
@@ -85,34 +92,28 @@ class ScentAuraViewModel {
             "- \(accord.name): \(Int(accord.score)) pts"
         }.joined(separator: "\n")
 
-        let label = profile.accordLabel
-        let secondLabel = profile.secondFamily?.rawValue ?? "none"
-
         return """
         You are a master perfumer writing a personalised scent profile for a fragrance app called Scentdex.
 
-        The user's collection has been analysed and their olfactive profile is:
-
-        Label: \(label)
+        The user's collection has been analysed:
         Dominant family: \(profile.dominantFamily.rawValue)
-        Second family: \(secondLabel)
-
-        Their top accords by weight across their collection:
+        Second family: \(profile.secondFamily?.rawValue ?? "none")
+        Top accords by weight:
         \(accordLines)
 
-        Write a 3-sentence personal profile description.
-        Rules:
-        - Write directly to the user (use "your", "you")
-        - Mention 2-3 of their specific top accords by name
-        - Include one piece of real perfumery knowledge translated into accessible language
-        - Tone: warm, confident, like a knowledgeable friend — not academic
-        - No bullet points, no headers, just flowing prose
-        - Do not mention the label name directly
+        Respond ONLY with a valid JSON object, no markdown, no extra text:
+        {
+          "label": "A 2-3 word evocative name for this olfactive profile. Should feel poetic and personal, not technical. Examples: 'Dark Botanist', 'Sunlit Nomad', 'Velvet Storm', 'Amber Drifter'. Never use family names directly.",
+          "description": "3 sentences written directly to the user. Mention 2-3 specific top accords by name in **bold**. Include one real perfumery insight in accessible language. Tone: warm and confident, like a knowledgeable friend."
+        }
         """
     }
 
-    private func fallbackDescription(for profile: ScentProfile) -> String {
+    private func fallback(for profile: ScentProfile) -> (label: String, description: String) {
         let names = profile.topAccords.prefix(3).map { $0.name }.joined(separator: ", ")
-        return "Your collection is anchored by \(names) — a combination that speaks of a considered, personal approach to fragrance. These aren't accidental choices."
+        return (
+            label: profile.accordLabel,
+            description: "Your collection is anchored by \(names) — a combination that speaks of a considered, personal approach to fragrance."
+        )
     }
 }

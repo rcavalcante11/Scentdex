@@ -41,7 +41,7 @@ struct ScentAuraView: View {
                                 .tracking(3)
                                 .foregroundStyle(.white.opacity(0.5))
 
-                            Text(profile.profileTitle)
+                            Text(viewModel.generatedLabel.isEmpty ? profile.profileTitle : viewModel.generatedLabel)
                                 .font(.system(size: 34, weight: .medium))
                                 .foregroundStyle(.white)
 
