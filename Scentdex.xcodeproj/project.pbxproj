@@ -39,6 +39,7 @@
 		FAD4F3302F718E15002324F0 /* DeckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD4F32F2F718E15002324F0 /* DeckView.swift */; };
 		FADB99FC2F9233FC00021F19 /* RecommendationCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB99FB2F9233E800021F19 /* RecommendationCarouselView.swift */; };
 		FAE400CA2FB5C6FC0095AD5E /* FeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE400C92FB5C6FC0095AD5E /* FeedViewModel.swift */; };
+		FAF061C42FE5868100A5DBA7 /* RadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF061C32FE5868100A5DBA7 /* RadarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +77,7 @@
 		FAD4F32F2F718E15002324F0 /* DeckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckView.swift; sourceTree = "<group>"; };
 		FADB99FB2F9233E800021F19 /* RecommendationCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationCarouselView.swift; sourceTree = "<group>"; };
 		FAE400C92FB5C6FC0095AD5E /* FeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewModel.swift; sourceTree = "<group>"; };
+		FAF061C32FE5868100A5DBA7 /* RadarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,6 +188,7 @@
 				FADB99FB2F9233E800021F19 /* RecommendationCarouselView.swift */,
 				FA0F9C122F966B1100D791D9 /* RecommendationCardView.swift */,
 				FAAA096B2F99011A00855B01 /* RecommendationDetailSheet.swift */,
+				FAF061C32FE5868100A5DBA7 /* RadarView.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				FACD1A792F7D673E00A568F4 /* FragranceResult.swift in Sources */,
 				FA36ACE22F76DB0D00AF05CF /* ScentProfile.swift in Sources */,
 				FA4227472F73377600FDC76A /* PerfumeCardView.swift in Sources */,
+				FAF061C42FE5868100A5DBA7 /* RadarView.swift in Sources */,
 				FAD4F3302F718E15002324F0 /* DeckView.swift in Sources */,
 				FAAE3F862FD6D52F0054E20C /* ScentAuraViewModel.swift in Sources */,
 				FAAA096E2F9BB33800855B01 /* FlowLayout.swift in Sources */,
