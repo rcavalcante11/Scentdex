@@ -80,7 +80,6 @@ struct ScentAuraView: View {
 
                 // MARK: Collection breakdown + Recommendations
                 VStack(alignment: .leading, spacing: 24) {
-                    familyDistributionSection
                     RecommendationCarouselView(profile: profile)
                 }
                 .padding(24)
@@ -288,32 +287,6 @@ struct ScentAuraView: View {
                     insertion: .opacity.combined(with: .move(edge: .top)),
                     removal: .opacity.combined(with: .move(edge: .top))
                 ))
-            }
-        }
-    }
-
-    // MARK: - Family Distribution
-    private var familyDistributionSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Collection breakdown")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-
-            ForEach(sortedFamilies, id: \.key) { family, count in
-                HStack {
-                    Text(family.rawValue)
-                        .font(.caption)
-                        .frame(width: 80, alignment: .leading)
-                    GeometryReader { geo in
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(family.color.opacity(0.7))
-                            .frame(width: geo.size.width * barWidth(for: count), height: 8)
-                    }
-                    .frame(height: 8)
-                    Text("\(count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
             }
         }
     }
