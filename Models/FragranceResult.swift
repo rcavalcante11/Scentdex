@@ -12,7 +12,6 @@ struct FragranceResult: Decodable, Identifiable {
     let gender: String?
     let imageUrl: String?
     let imageUrlStandard: String?
-    let price: String?
     let mainAccords: [String: String]?
 
     // MARK: - Init interno
@@ -30,7 +29,6 @@ struct FragranceResult: Decodable, Identifiable {
         self.gender = gender
         self.imageUrl = imageUrl
         self.imageUrlStandard = nil
-        self.price = nil
         self.mainAccords = nil  // ← novo
     }
 
@@ -42,8 +40,7 @@ struct FragranceResult: Decodable, Identifiable {
         gender           = try? container.decode(String.self, forKey: .gender)
         imageUrl         = try? container.decode(String.self, forKey: .imageUrl)
         imageUrlStandard = try? container.decode(String.self, forKey: .imageUrlStandard)
-        price            = try? container.decode(String.self, forKey: .price)
-        mainAccords      = try? container.decode([String: String].self, forKey: .mainAccords)  // ← novo
+        mainAccords      = try? container.decode([String: String].self, forKey: .mainAccords)
 
         let notesObj    = try? container.decode(NotesObject.self, forKey: .notes)
         topNotes        = notesObj?.top.map    { $0.name }
@@ -64,7 +61,6 @@ struct FragranceResult: Decodable, Identifiable {
         case generalNotes    = "General Notes"
         case mainAccords     = "Main Accords Percentage"
         case notes           = "Notes"
-        case price           = "Price"
     }
 
     // MARK: - Computed

@@ -77,9 +77,6 @@ struct PerfumeDetailView: View {
                 LabeledContent("Brand", value: perfume.brand)
                 LabeledContent("Family", value: perfume.family.rawValue)
                 LabeledContent("Gender", value: perfume.gender.rawValue)
-                if let price = perfume.price, !price.isEmpty {
-                    LabeledContent("Price", value: "£\(price)")
-                }
                 LabeledContent("Added", value: perfume.dateAdded.formatted(date: .abbreviated, time: .omitted))
             }
 

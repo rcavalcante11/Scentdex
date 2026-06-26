@@ -194,7 +194,6 @@ struct DeckView: View {
             middleNotes: result.middleNotes ?? [],
             baseNotes: result.baseNotes ?? [],
             imageUrl: result.bestImageUrl,
-            price: result.price,
             accordsData: result.accordsJSON
         )
         modelContext.insert(perfume)

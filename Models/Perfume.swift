@@ -14,7 +14,6 @@ class Perfume {
     var baseNotes: [String]
     var dateAdded: Date
     var imageUrl: String?
-    var price: String?
     var accordsData: String?  // JSON: {"woody":"Dominant","oud":"Prominent",...}
 
     init(
@@ -41,7 +40,6 @@ class Perfume {
         self.baseNotes = baseNotes
         self.dateAdded = dateAdded
         self.imageUrl = imageUrl
-        self.price = price
         self.accordsData = accordsData
     }
 
