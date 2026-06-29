@@ -141,46 +141,48 @@ struct RecommendationCarouselView: View {
 
             } else {
                 ZStack(alignment: .bottom) {
-                    gridView(preview)
-                        .allowsHitTesting(false)
+                        // Cards sem interacção
+                        gridView(preview)
+                            .allowsHitTesting(false)
+                            .padding(.bottom, 60) // espaço extra para o gradiente cobrir
 
-                    VStack(spacing: 0) {
-                        Spacer()
-                            .frame(height: 40)
+                        // Gradiente por cima dos cards — cobre da metade para baixo
                         LinearGradient(
-                            colors: [.clear, Color(UIColor.systemBackground)],
-                            startPoint: .top,
+                            colors: [.clear, .black],
+                            startPoint: .init(x: 0.5, y: 0.3),
                             endPoint: .bottom
                         )
-                        .frame(height: 120)
-                    }
-                    .allowsHitTesting(false)
+                        .ignoresSafeArea(edges: .bottom)
+                        .allowsHitTesting(false)
 
-                    Button {
+                        // Pill por cima de tudo
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.35)) {
+                                expanded = true
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.down")
+                                    .font(.caption2)
+                                Text("See all \(all.count) recommendations")
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(.secondary)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 16)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Capsule())
+                        }
+                        .padding(.bottom, 16)
+                    }
+                    .frame(height: 280) // altura fixa do preview
+                    .clipped()
+                    .onTapGesture {
                         withAnimation(.easeInOut(duration: 0.35)) {
                             expanded = true
                         }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.down")
-                                .font(.caption2)
-                            Text("See all \(all.count) recommendations")
-                                .font(.caption)
-                        }
-                        .foregroundStyle(.secondary)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 16)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
-                        .padding(.bottom, 60)
                     }
                 }
-                .onTapGesture {
-                    withAnimation(.easeInOut(duration: 0.35)) {
-                        expanded = true
-                    }
-                }
-            }
         }
         .sheet(item: $selectedFragrance) { fragrance in
             RecommendationDetailSheet(
