@@ -345,11 +345,12 @@ struct ScentAuraView: View {
         let c2 = blobColors.count > 1 ? blobColors[1] : blobColors[0]
         let c3 = blobColors.count > 2 ? blobColors[2] : blobColors[0]
         return [
-            BlobConfig(color: c1,              size: 320, fromX: -80,  fromY: -120, toX: 60,   toY: -30,  toScale: 1.25, duration: 3.2, delay: 0),
+            BlobConfig(color: c1,              size: 300, fromX: -80,  fromY: -120, toX: 60,   toY: -30,  toScale: 1.25, duration: 3.2, delay: 0),
             BlobConfig(color: c2,              size: 280, fromX: 90,   fromY: 70,   toX: -50,  toY: 100,  toScale: 0.85, duration: 2.8, delay: 0.3),
-            BlobConfig(color: c3,              size: 240, fromX: 40,   fromY: -90,  toX: -70,  toY: 50,   toScale: 1.15, duration: 4.0, delay: 0.8),
+            BlobConfig(color: c3,              size: 280, fromX: 40,   fromY: -90,  toX: -70,  toY: 50,   toScale: 1.15, duration: 4.0, delay: 0.8),
             BlobConfig(color: c1.opacity(0.6), size: 200, fromX: -60,  fromY: 90,   toX: 70,   toY: -50,  toScale: 1.3,  duration: 2.4, delay: 0.5),
-            BlobConfig(color: c2.opacity(0.4), size: 160, fromX: 0,    fromY: -50,  toX: -30,  toY: 80,   toScale: 0.9,  duration: 3.6, delay: 1.2)
+            BlobConfig(color: c2.opacity(0.5), size: 180, fromX: 0,    fromY: -50,  toX: -30,  toY: 80,   toScale: 0.9,  duration: 3.6, delay: 1.2),
+            BlobConfig(color: c3.opacity(0.5), size: 180, fromX: -30,  fromY: 60,   toX: 50,   toY: -70,  toScale: 1.1,  duration: 3.0, delay: 0.9)
         ]
     }
 
