@@ -22,7 +22,7 @@ class ScentAuraViewModel {
 
     // MARK: - Private
     private func fetchProfile(for profile: ScentProfile) async -> (label: String, description: String) {
-        print("🧠 Calling Claude API...")
+
         let prompt = buildPrompt(for: profile)
 
         guard let url = URL(string: "https://api.anthropic.com/v1/messages") else {
@@ -49,8 +49,8 @@ class ScentAuraViewModel {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
 
-            if let httpResponse = response as? HTTPURLResponse {
-                print("🧠 Status:", httpResponse.statusCode)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+                return fallback(for: profile)
             }
 
             guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -61,7 +61,7 @@ class ScentAuraViewModel {
                 return fallback(for: profile)
             }
 
-            print("🧠 Response:", text.prefix(200))
+            
 
             // Parse JSON response
             let clean = text
@@ -75,7 +75,7 @@ class ScentAuraViewModel {
                   let label = parsed["label"],
                   let desc = parsed["description"]
             else {
-                print("🧠 Failed to parse JSON")
+              
                 return fallback(for: profile)
             }
 

@@ -54,14 +54,7 @@ class PerfumeService {
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
-
-            if let httpResponse = response as? HTTPURLResponse {
-                print("📡 Fragella status:", httpResponse.statusCode, urlString)
-            }
-            if let json = String(data: data, encoding: .utf8) {
-                print("📦 Response:", json)
-            }
-
+            
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
                 throw URLError(.badServerResponse)

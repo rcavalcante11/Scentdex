@@ -303,28 +303,10 @@ struct ScentAuraView: View {
             .clipShape(Capsule())
     }
 
-    private func familyTag(_ name: String) -> some View {
-        accordTag(name)
-    }
-
     private var topAccordTags: [String] {
         profile.topAccords.prefix(3).map { $0.name }
     }
 
-    private var topFamilies: [String] {
-        sortedFamilies.prefix(3).map { $0.key.rawValue }
-    }
-
-    private var sortedFamilies: [(key: FragranceFamily, count: Int)] {
-        profile.familyDistribution
-            .sorted { $0.value > $1.value }
-            .map { (key: $0.key, count: $0.value) }
-    }
-
-    private func barWidth(for count: Int) -> CGFloat {
-        let max = profile.familyDistribution.values.max() ?? 1
-        return CGFloat(count) / CGFloat(max)
-    }
 
     private func barRatio(_ score: Double) -> CGFloat {
         let max = profile.topAccords.first?.score ?? 1
@@ -333,11 +315,12 @@ struct ScentAuraView: View {
 
     private var blobColors: [Color] {
         let sorted = profile.topAccords.prefix(3).map { $0.family.color }
-        return sorted.count >= 3 ? Array(sorted) : [
-            profile.auraColors[0],
-            profile.auraColors[1],
-            profile.auraColors[0].opacity(0.6)
-        ]
+        guard sorted.count >= 3 else {
+            let c1 = profile.dominantFamily.color
+            let c2 = profile.secondFamily?.color ?? c1
+            return [c1, c2, c1.opacity(0.6)]
+        }
+        return Array(sorted)
     }
 
     private var blobConfigs: [BlobConfig] {

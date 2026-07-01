@@ -1,5 +1,4 @@
 import Foundation
-import SwiftUI
 
 // MARK: - Accord Score
 struct AccordScore {
@@ -29,22 +28,16 @@ struct ScentProfile {
         return Self.labelFor(dominant: first, second: second)
     }
 
-    // profileTitle agora usa o label de acordes
+
     var profileTitle: String { accordLabel }
 
-    // Placeholder — substituído pela Claude API na Fase 3
+ 
     var profileDescription: String {
         let names = topAccords.prefix(3).map { $0.name }.joined(separator: ", ")
         return "Your collection is defined by \(names). A profile built with intention."
     }
 
-    // Cores dos top 2 acordes — blobs genuinamente únicos
-    var auraColors: [Color] {
-        let sorted = familyScores.sorted { $0.value > $1.value }
-        let c1 = sorted.first?.key.color ?? dominantFamily.color
-        let c2 = sorted.count > 1 ? sorted[1].key.color : c1.opacity(0.5)
-        return [c1, c2]
-    }
+
 
     // MARK: - Factory
     static func calculate(from perfumes: [Perfume]) -> ScentProfile? {
