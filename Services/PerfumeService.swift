@@ -12,7 +12,6 @@ class PerfumeService {
     }
 
     // MARK: - Search
-    
     func searchPerfumes(query: String) async throws -> [FragranceResult] {
         guard !query.isEmpty else { return [] }
         let endpoint = "\(baseURL)/fragrances?search=\(query.urlEncoded)&limit=10"
@@ -43,7 +42,7 @@ class PerfumeService {
 
         let decoded = try JSONDecoder().decode(SimilarResponse.self, from: data)
         return decoded.similarFragrances
-    }   
+    }
 
     // MARK: - Match By Notes
     func searchByNotes(notes: String) async throws -> [FragranceResult] {
@@ -78,7 +77,11 @@ class PerfumeService {
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
-            
+
+            if let json = String(data: data, encoding: .utf8) {
+                print("📦 Response:", json.prefix(500))
+            }
+
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
                 throw URLError(.badServerResponse)

@@ -27,6 +27,8 @@ class ScentAuraViewModel {
         description = result.description
         isLoading = false
     }
+    
+    
 
     // MARK: - Private
     private func fetchProfile(for profile: ScentProfile) async -> (label: String, description: String) {
@@ -124,4 +126,5 @@ class ScentAuraViewModel {
             description: "Your collection is anchored by \(names) — a combination that speaks of a considered, personal approach to fragrance."
         )
     }
+    
 }

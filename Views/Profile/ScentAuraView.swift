@@ -14,88 +14,104 @@ struct ScentAuraView: View {
 
     // MARK: - Body
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 0) {
 
-                ZStack(alignment: .bottom) {
-                    blobsLayer
+                    Color.clear
+                        .frame(height: 0)
+                        .id("top")
 
-                    LinearGradient(
-                        colors: [.black.opacity(0.3), .clear],
-                        startPoint: .top,
-                        endPoint: .center
-                    )
+                    ZStack(alignment: .bottom) {
+                        blobsLayer
 
-                    VStack {
-                        Spacer()
                         LinearGradient(
-                            colors: [.clear, .black],
+                            colors: [.black.opacity(0.3), .clear],
                             startPoint: .top,
-                            endPoint: .bottom
+                            endPoint: .center
                         )
-                        .frame(height: 200)
-                    }
 
-                    VStack(alignment: .leading, spacing: 0) {
-                        Spacer()
+                        VStack {
+                            Spacer()
+                            LinearGradient(
+                                colors: [.clear, .black],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 200)
+                        }
 
-                        // MARK: Label + Accord pills
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Your Scent Aura")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .tracking(3)
-                                .foregroundStyle(.white.opacity(0.5))
+                        VStack(alignment: .leading, spacing: 0) {
+                            Spacer()
 
-                            Text(viewModel.generatedLabel.isEmpty ? profile.profileTitle : viewModel.generatedLabel)
-                                .font(.system(size: 34, weight: .medium))
-                                .foregroundStyle(.white)
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Your Scent Aura")
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .tracking(3)
+                                    .foregroundStyle(.white.opacity(0.5))
 
-                            HStack(spacing: 8) {
-                                ForEach(topAccordTags, id: \.self) { name in
-                                    accordTag(name)
+                                Text(viewModel.generatedLabel.isEmpty ? profile.profileTitle : viewModel.generatedLabel)
+                                    .font(.system(size: 34, weight: .medium))
+                                    .foregroundStyle(.white)
+
+                                HStack(spacing: 8) {
+                                    ForEach(topAccordTags, id: \.self) { name in
+                                        accordTag(name)
+                                    }
                                 }
                             }
+                            .padding(.horizontal, 28)
+
+                            Divider()
+                                .background(.white.opacity(0.15))
+                                .padding(.vertical, 24)
+                                .padding(.horizontal, 28)
+
+                            descriptionSection
+                                .padding(.horizontal, 28)
+
+                            auraFingerprintSection
+                                .padding(.horizontal, 28)
+                                .padding(.top, 16)
+
+                            Spacer().frame(height: 40)
                         }
-                        .padding(.horizontal, 28)
+                    }
+                    .frame(minHeight: 700)
 
-                        Divider()
-                            .background(.white.opacity(0.15))
-                            .padding(.vertical, 24)
-                            .padding(.horizontal, 28)
-
-                        // MARK: Description
-                        descriptionSection
-                            .padding(.horizontal, 28)
-
-                        // MARK: Aura Fingerprint dropdown
-                        auraFingerprintSection
-                            .padding(.horizontal, 28)
-                            .padding(.top, 16)
-
-                        Spacer().frame(height: 40)
+                    VStack(alignment: .leading, spacing: 24) {
+                        RecommendationCarouselView(profile: profile)
+                    }
+                    .padding(24)
+                    .background(Color.black)
+                }
+            }
+            .onChange(of: fingerprintExpanded) { _, expanded in
+                if !expanded {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        proxy.scrollTo("top", anchor: .top)
                     }
                 }
-                .frame(minHeight: 700)
-
-                // MARK: Collection breakdown + Recommendations
-                VStack(alignment: .leading, spacing: 24) {
-                    RecommendationCarouselView(profile: profile)
-                }
-                .padding(24)
-                .background(Color.black)
             }
+            .onChange(of: descriptionExpanded) { _, expanded in
+                if !expanded {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        proxy.scrollTo("top", anchor: .top)
+                    }
+                }
+            }
+            .ignoresSafeArea(edges: .top)
+            .onAppear {
+                animate = true
+                Task { await viewModel.generateDescription(for: profile) }
+            }
+            .onChange(of: profile.topAccords.map { $0.name }) { _, _ in
+                viewModel.reset()
+                Task { await viewModel.generateDescription(for: profile) }
+            }
+            .background(Color.black)
         }
-        .ignoresSafeArea(edges: .top)
-        .onAppear {
-            animate = true
-            Task { await viewModel.generateDescription(for: profile) }
-        }
-        .onChange(of: profile.topAccords.map { $0.name }) { _, _ in
-            viewModel.reset()
-            Task { await viewModel.generateDescription(for: profile) }
-        }
-        .background(Color.black)
     }
 
     // MARK: - Description Section
@@ -158,7 +174,6 @@ struct ScentAuraView: View {
     // MARK: - Aura Fingerprint Section
     private var auraFingerprintSection: some View {
         VStack(spacing: 0) {
-            // Trigger button
             Button {
                 withAnimation(.easeInOut(duration: 0.35)) {
                     fingerprintExpanded.toggle()
@@ -172,11 +187,10 @@ struct ScentAuraView: View {
                 }
             } label: {
                 HStack(spacing: 10) {
-                    // Mini blobs
                     HStack(spacing: -4) {
                         ForEach(0..<3, id: \.self) { i in
                             Circle()
-                                .fill(blobColors[i])
+                                .fill(blobColors[i < blobColors.count ? i : 0])
                                 .frame(width: 16, height: 16)
                                 .blur(radius: 3)
                         }
@@ -205,11 +219,9 @@ struct ScentAuraView: View {
                 )
             }
 
-            // Expanded content
             if fingerprintExpanded {
                 VStack(alignment: .leading, spacing: 16) {
 
-                    // Signature Notes
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Signature Notes")
                             .font(.caption)
@@ -233,7 +245,6 @@ struct ScentAuraView: View {
                     Divider()
                         .background(.white.opacity(0.1))
 
-                    // Accord Breakdown
                     Text("Accord Breakdown")
                         .font(.caption)
                         .fontWeight(.medium)
@@ -241,14 +252,12 @@ struct ScentAuraView: View {
                         .foregroundStyle(.white.opacity(0.4))
 
                     HStack(alignment: .center, spacing: 16) {
-                        // Radar
                         RadarView(
                             accords: profile.topAccords,
                             animated: radarAnimated
                         )
                         .frame(width: 100, height: 100)
 
-                        // Bars
                         VStack(alignment: .leading, spacing: 6) {
                             ForEach(profile.topAccords.prefix(5), id: \.name) { accord in
                                 HStack(spacing: 6) {
@@ -311,12 +320,6 @@ struct ScentAuraView: View {
         profile.topAccords.prefix(3).map { $0.name }
     }
 
-
-    private func barRatio(_ score: Double) -> CGFloat {
-        let max = profile.topAccords.first?.score ?? 1
-        return CGFloat(score / max)
-    }
-
     private var blobColors: [Color] {
         let sorted = profile.topAccords.prefix(3).map { $0.family.color }
         guard sorted.count >= 3 else {
@@ -361,6 +364,11 @@ struct ScentAuraView: View {
 
     private func parseMarkdown(_ text: String) -> AttributedString {
         (try? AttributedString(markdown: text)) ?? AttributedString(text)
+    }
+
+    private func barRatio(_ score: Double) -> CGFloat {
+        let max = profile.topAccords.first?.score ?? 1
+        return CGFloat(score / max)
     }
 
     private struct BlobConfig {
