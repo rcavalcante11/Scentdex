@@ -91,6 +91,10 @@ struct ScentAuraView: View {
             animate = true
             Task { await viewModel.generateDescription(for: profile) }
         }
+        .onChange(of: profile.topAccords.map { $0.name }) { _, _ in
+            viewModel.reset()
+            Task { await viewModel.generateDescription(for: profile) }
+        }
         .background(Color.black)
     }
 

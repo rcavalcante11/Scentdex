@@ -52,7 +52,6 @@ class RecommendationViewModel {
             state = candidates.isEmpty ? .empty : .loaded(candidates)
 
         } catch {
-            print("❌ Recommendation error:", error.localizedDescription)
             let filtered = filter(mockResults, excluding: ownedPerfumes)
             state = filtered.isEmpty ? .empty : .loaded(filtered)
         }

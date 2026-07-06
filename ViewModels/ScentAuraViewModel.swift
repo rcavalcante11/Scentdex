@@ -3,6 +3,8 @@ import Observation
 
 @Observable
 class ScentAuraViewModel {
+    
+    
 
     // MARK: - Properties
     private(set) var generatedLabel: String = ""
@@ -10,6 +12,12 @@ class ScentAuraViewModel {
     private(set) var isLoading: Bool = false
 
     // MARK: - Intent
+    @MainActor
+    func reset() {
+        description = ""
+        generatedLabel = ""
+    }
+    
     @MainActor
     func generateDescription(for profile: ScentProfile) async {
         guard description.isEmpty else { return }
