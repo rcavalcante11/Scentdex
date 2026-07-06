@@ -1,8 +1,10 @@
 import SwiftUI
 import SwiftData
 
+
 struct RecommendationCarouselView: View {
 
+    
     // MARK: - Properties
     let profile: ScentProfile
     @Query private var ownedPerfumes: [Perfume]
@@ -61,7 +63,10 @@ struct RecommendationCarouselView: View {
                             .font(.subheadline)
                             .foregroundStyle(.accent)
                     }
-                    .disabled(viewModel.isLoading)
+                    .disabled({
+                        if case .loading = viewModel.state { return true }
+                        return false
+                    }())
 
                     HStack(spacing: 2) {
                         Button {

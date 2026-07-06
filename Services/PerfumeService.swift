@@ -22,12 +22,36 @@ class PerfumeService {
     // MARK: - Similar
     func fetchSimilar(to perfumeName: String) async throws -> [FragranceResult] {
         let endpoint = "\(baseURL)/fragrances/similar?name=\(perfumeName.urlEncoded)&limit=6"
-        return try await fetch(from: endpoint)
-    }
+        guard let url = URL(string: endpoint) else { throw URLError(.badURL) }
+
+        var request = URLRequest(url: url)
+        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+
+        struct SimilarResponse: Decodable {
+            let similarFragrances: [FragranceResult]
+            enum CodingKeys: String, CodingKey {
+                case similarFragrances = "similar_fragrances"
+            }
+        }
+
+        let decoded = try JSONDecoder().decode(SimilarResponse.self, from: data)
+        return decoded.similarFragrances
+    }   
 
     // MARK: - Match By Notes
     func searchByNotes(notes: String) async throws -> [FragranceResult] {
-        let endpoint = "\(baseURL)/fragrances/match?notes=\(notes.urlEncoded)&limit=10"
+        let encoded = notes
+            .components(separatedBy: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces).addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? $0 }
+            .joined(separator: ",")
+        let endpoint = "\(baseURL)/fragrances/match?notes=\(encoded)&limit=10"
         return try await fetch(from: endpoint)
     }
 
