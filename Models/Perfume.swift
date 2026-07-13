@@ -15,6 +15,7 @@ class Perfume {
     var dateAdded: Date
     var imageUrl: String?
     var accordsData: String?  // JSON: {"woody":"Dominant","oud":"Prominent",...}
+    var isWishlist: Bool = false
 
     init(
         id: UUID = UUID(),
@@ -27,9 +28,9 @@ class Perfume {
         baseNotes: [String] = [],
         dateAdded: Date = Date(),
         imageUrl: String? = nil,
-        price: String? = nil,
-        accordsData: String? = nil
-    ) {
+        accordsData: String? = nil,
+        isWishlist: Bool = false
+    ){
         self.id = id
         self.name = name
         self.brand = brand
@@ -41,6 +42,7 @@ class Perfume {
         self.dateAdded = dateAdded
         self.imageUrl = imageUrl
         self.accordsData = accordsData
+        self.isWishlist = isWishlist
     }
 
     var allNotes: [String] {

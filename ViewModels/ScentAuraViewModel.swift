@@ -3,8 +3,6 @@ import Observation
 
 @Observable
 class ScentAuraViewModel {
-    
-    
 
     // MARK: - Properties
     private(set) var generatedLabel: String = ""
@@ -17,7 +15,7 @@ class ScentAuraViewModel {
         description = ""
         generatedLabel = ""
     }
-    
+
     @MainActor
     func generateDescription(for profile: ScentProfile) async {
         guard description.isEmpty else { return }
@@ -27,12 +25,9 @@ class ScentAuraViewModel {
         description = result.description
         isLoading = false
     }
-    
-    
 
     // MARK: - Private
     private func fetchProfile(for profile: ScentProfile) async -> (label: String, description: String) {
-
         let prompt = buildPrompt(for: profile)
 
         guard let url = URL(string: "https://api.anthropic.com/v1/messages") else {
@@ -71,9 +66,6 @@ class ScentAuraViewModel {
                 return fallback(for: profile)
             }
 
-            
-
-            // Parse JSON response
             let clean = text
                 .trimmingCharacters(in: .whitespacesAndNewlines)
                 .replacingOccurrences(of: "```json", with: "")
@@ -85,7 +77,7 @@ class ScentAuraViewModel {
                   let label = parsed["label"],
                   let desc = parsed["description"]
             else {
-              
+                print("🧠 Failed to parse JSON")
                 return fallback(for: profile)
             }
 
@@ -102,6 +94,22 @@ class ScentAuraViewModel {
             "- \(accord.name): \(Int(accord.score)) pts"
         }.joined(separator: "\n")
 
+        let wishlistSection: String
+        if !profile.wishlistAccords.isEmpty {
+            let wishlistLines = profile.wishlistAccords.prefix(3)
+                .map { "- \($0.name): \(Int($0.score)) pts" }
+                .joined(separator: "\n")
+            wishlistSection = """
+
+            The user also has a wishlist with these dominant accords:
+            \(wishlistLines)
+
+            Add one final sentence in *italic* about where their taste seems to be heading based on the wishlist — warm and observational, not prescriptive. Example: "*Your wishlist suggests you're being drawn toward something X — a direction worth exploring.*"
+            """
+        } else {
+            wishlistSection = ""
+        }
+
         return """
         You are a master perfumer writing a personalised scent profile for a fragrance app called Scentdex.
 
@@ -109,12 +117,12 @@ class ScentAuraViewModel {
         Dominant family: \(profile.dominantFamily.rawValue)
         Second family: \(profile.secondFamily?.rawValue ?? "none")
         Top accords by weight:
-        \(accordLines)
+        \(accordLines)\(wishlistSection)
 
         Respond ONLY with a valid JSON object, no markdown, no extra text:
         {
           "label": "A 2-3 word evocative name for this olfactive profile. Should feel poetic and personal, not technical. Examples: 'Dark Botanist', 'Sunlit Nomad', 'Velvet Storm', 'Amber Drifter'. Never use family names directly.",
-          "description": "3 sentences written directly to the user. Mention 2-3 specific top accords by name in **bold**. Include one real perfumery insight in accessible language. Tone: warm and confident, like a knowledgeable friend."
+          "description": "3 sentences written directly to the user. Mention 2-3 specific top accords by name in **bold**. Include one real perfumery insight in accessible language. If wishlist data was provided, add the italic sentence at the end. Tone: warm and confident, like a knowledgeable friend."
         }
         """
     }
@@ -126,5 +134,4 @@ class ScentAuraViewModel {
             description: "Your collection is anchored by \(names) — a combination that speaks of a considered, personal approach to fragrance."
         )
     }
-    
 }

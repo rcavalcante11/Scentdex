@@ -8,7 +8,14 @@ struct RecommendationDetailSheet: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @State private var added = false
+
+    private enum SaveState {
+        case none
+        case deck
+        case wishlist
+    }
+
+    @State private var saveState: SaveState = .none
 
     // MARK: - Computed
     private var commonNotes: [String] {
@@ -199,24 +206,47 @@ struct RecommendationDetailSheet: View {
                     .padding(.horizontal, 24)
                 }
 
-                // Add button
+                // Add to Deck button
                 Button {
-                    addToDeck()
+                    save(isWishlist: false)
                 } label: {
                     HStack {
-                        Image(systemName: added ? "checkmark" : "plus")
-                        Text(added ? "Added to My Deck" : "Add to My Deck")
+                        Image(systemName: saveState == .deck ? "checkmark" : "plus")
+                        Text(saveState == .deck ? "Added to My Deck" : "Add to My Deck")
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(added ? Color.green : Color.accentColor)
+                    .background(saveState == .deck ? Color.green : Color.accentColor)
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
-                .disabled(added)
+                .disabled(saveState != .none)
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
+
+                // Save to Wishlist button
+                Button {
+                    save(isWishlist: true)
+                } label: {
+                    HStack {
+                        Image(systemName: saveState == .wishlist ? "checkmark" : "heart")
+                        Text(saveState == .wishlist ? "Saved to Wishlist" : "Save to Wishlist")
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color.clear)
+                    .foregroundStyle(saveState == .wishlist ? .green : Color.accentColor)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(saveState == .wishlist ? Color.green : Color.accentColor, lineWidth: 1.5)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
+                .disabled(saveState != .none)
+                .padding(.horizontal, 24)
+                .padding(.top, 12)
                 .padding(.bottom, 32)
             }
             .frame(maxWidth: .infinity)
@@ -274,7 +304,7 @@ struct RecommendationDetailSheet: View {
     }
 
     // MARK: - Intent
-    private func addToDeck() {
+    private func save(isWishlist: Bool) {
         let perfume = Perfume(
             name: fragrance.name,
             brand: fragrance.brand,
@@ -284,12 +314,11 @@ struct RecommendationDetailSheet: View {
             middleNotes: fragrance.middleNotes ?? [],
             baseNotes: fragrance.baseNotes ?? [],
             imageUrl: fragrance.bestImageUrl,
-            accordsData: fragrance.accordsJSON
-            
-            
+            accordsData: fragrance.accordsJSON,
+            isWishlist: isWishlist
         )
         modelContext.insert(perfume)
-        withAnimation { added = true }
+        withAnimation { saveState = isWishlist ? .wishlist : .deck }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { dismiss() }
     }
 

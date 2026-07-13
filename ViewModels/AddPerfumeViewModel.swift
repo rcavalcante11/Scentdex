@@ -27,7 +27,7 @@ class AddPerfumeViewModel {
     var isSearching: Bool = false
     var selectedResult: FragranceResult? = nil
     var imageUrl: String? = nil
-
+    
     // MARK: - Mode
     private let mode: FormMode
     private var searchTask: Task<Void, Never>?

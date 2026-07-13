@@ -14,104 +14,84 @@ struct ScentAuraView: View {
 
     // MARK: - Body
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                VStack(spacing: 0) {
+        ScrollView {
+            VStack(spacing: 0) {
 
-                    Color.clear
-                        .frame(height: 0)
-                        .id("top")
+                ZStack(alignment: .bottom) {
+                    blobsLayer
 
-                    ZStack(alignment: .bottom) {
-                        blobsLayer
+                    LinearGradient(
+                        colors: [.black.opacity(0.3), .clear],
+                        startPoint: .top,
+                        endPoint: .center
+                    )
 
+                    VStack {
+                        Spacer()
                         LinearGradient(
-                            colors: [.black.opacity(0.3), .clear],
+                            colors: [.clear, .black],
                             startPoint: .top,
-                            endPoint: .center
+                            endPoint: .bottom
                         )
+                        .frame(height: 200)
+                    }
 
-                        VStack {
-                            Spacer()
-                            LinearGradient(
-                                colors: [.clear, .black],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                            .frame(height: 200)
-                        }
+                    VStack(alignment: .leading, spacing: 0) {
+                        Spacer().frame(height: 120)
 
-                        VStack(alignment: .leading, spacing: 0) {
-                            Spacer()
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Your Scent Aura")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .tracking(3)
+                                .foregroundStyle(.white.opacity(0.5))
 
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Your Scent Aura")
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                                    .tracking(3)
-                                    .foregroundStyle(.white.opacity(0.5))
+                            Text(viewModel.generatedLabel.isEmpty ? profile.profileTitle : viewModel.generatedLabel)
+                                .font(.system(size: 34, weight: .medium))
+                                .foregroundStyle(.white)
 
-                                Text(viewModel.generatedLabel.isEmpty ? profile.profileTitle : viewModel.generatedLabel)
-                                    .font(.system(size: 34, weight: .medium))
-                                    .foregroundStyle(.white)
-
-                                HStack(spacing: 8) {
-                                    ForEach(topAccordTags, id: \.self) { name in
-                                        accordTag(name)
-                                    }
+                            HStack(spacing: 8) {
+                                ForEach(topAccordTags, id: \.self) { name in
+                                    accordTag(name)
                                 }
                             }
+                        }
+                        .padding(.horizontal, 28)
+
+                        Divider()
+                            .background(.white.opacity(0.15))
+                            .padding(.vertical, 24)
                             .padding(.horizontal, 28)
 
-                            Divider()
-                                .background(.white.opacity(0.15))
-                                .padding(.vertical, 24)
-                                .padding(.horizontal, 28)
+                        descriptionSection
+                            .padding(.horizontal, 28)
 
-                            descriptionSection
-                                .padding(.horizontal, 28)
+                        auraFingerprintSection
+                            .padding(.horizontal, 28)
+                            .padding(.top, 16)
 
-                            auraFingerprintSection
-                                .padding(.horizontal, 28)
-                                .padding(.top, 16)
-
-                            Spacer().frame(height: 40)
-                        }
-                    }
-                    .frame(minHeight: 700)
-
-                    VStack(alignment: .leading, spacing: 24) {
-                        RecommendationCarouselView(profile: profile)
-                    }
-                    .padding(24)
-                    .background(Color.black)
-                }
-            }
-            .onChange(of: fingerprintExpanded) { _, expanded in
-                if !expanded {
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        proxy.scrollTo("top", anchor: .top)
+                        Spacer().frame(height: 40)
                     }
                 }
-            }
-            .onChange(of: descriptionExpanded) { _, expanded in
-                if !expanded {
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        proxy.scrollTo("top", anchor: .top)
-                    }
+                .frame(minHeight: 500)
+
+                VStack(alignment: .leading, spacing: 24) {
+                    RecommendationCarouselView(profile: profile)
                 }
+                .padding(24)
+                .background(Color.black)
             }
-            .ignoresSafeArea(edges: .top)
-            .onAppear {
-                animate = true
-                Task { await viewModel.generateDescription(for: profile) }
-            }
-            .onChange(of: profile.topAccords.map { $0.name }) { _, _ in
-                viewModel.reset()
-                Task { await viewModel.generateDescription(for: profile) }
-            }
-            .background(Color.black)
         }
+        .ignoresSafeArea(edges: .top)
+        .onAppear {
+            animate = true
+            Task { await viewModel.generateDescription(for: profile) }
+        }
+        .onChange(of: profile.topAccords.map { $0.name }) { _, _ in
+            viewModel.reset()
+            Task { await viewModel.generateDescription(for: profile) }
+        }
+        .background(Color.black)
     }
 
     // MARK: - Description Section
@@ -393,6 +373,10 @@ struct ScentAuraView: View {
             AccordScore(name: "amber", score: 5, family: .oriental),
             AccordScore(name: "spicy", score: 3, family: .spicy),
             AccordScore(name: "earthy", score: 2, family: .herbal)
-        ]
+            
+        ],
+        wishlistAccords: []
     ))
 }
+
+

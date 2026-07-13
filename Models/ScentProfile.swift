@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 // MARK: - Accord Score
 struct AccordScore {
@@ -15,12 +16,11 @@ struct ScentProfile {
     let secondFamily: FragranceFamily?
     let topNotes: [String]
     let familyDistribution: [FragranceFamily: Int]
-    let familyScores: [FragranceFamily: Double]   // hybrid score por família
-    let topAccords: [AccordScore]                 // top 8 acordes raw
+    let familyScores: [FragranceFamily: Double]
+    let topAccords: [AccordScore]
+    let wishlistAccords: [AccordScore]  // ← novo
 
     // MARK: - Computed
-
-    // Label evocativo — "Heavy Oriental", "Aromatic Fresh", etc.
     var accordLabel: String {
         let sorted = familyScores.sorted { $0.value > $1.value }
         let first = sorted.first?.key ?? dominantFamily
@@ -28,26 +28,38 @@ struct ScentProfile {
         return Self.labelFor(dominant: first, second: second)
     }
 
-
     var profileTitle: String { accordLabel }
 
- 
     var profileDescription: String {
         let names = topAccords.prefix(3).map { $0.name }.joined(separator: ", ")
         return "Your collection is defined by \(names). A profile built with intention."
     }
 
-
-
     // MARK: - Factory
     static func calculate(from perfumes: [Perfume]) -> ScentProfile? {
-        guard !perfumes.isEmpty else { return nil }
+        let collection = perfumes.filter { !$0.isWishlist }
+        guard !collection.isEmpty else { return nil }
 
-        // 1. Acumula pontos por acorde em toda a colecção
+        // Acordes da wishlist
+        var wishlistAccordSum: [String: Double] = [:]
+        let wishlist = perfumes.filter { $0.isWishlist }
+        for perfume in wishlist {
+            for (accord, level) in perfume.accords {
+                let pts = levelPoints(level)
+                let key = accord.lowercased().trimmingCharacters(in: .whitespaces)
+                wishlistAccordSum[key, default: 0] += pts
+            }
+        }
+        let wishlistAccords = wishlistAccordSum
+            .sorted { $0.value > $1.value }
+            .prefix(5)
+            .map { AccordScore(name: $0.key, score: $0.value, family: mapAccordToFamily($0.key)) }
+
+        // Acordes da colecção
         var accordSum: [String: Double] = [:]
         var accordMax: [String: Double] = [:]
 
-        for perfume in perfumes {
+        for perfume in collection {
             for (accord, level) in perfume.accords {
                 let pts = levelPoints(level)
                 let key = accord.lowercased().trimmingCharacters(in: .whitespaces)
@@ -56,8 +68,7 @@ struct ScentProfile {
             }
         }
 
-        // 2. Mapeia acordes → famílias e aplica fórmula híbrida
-        //    score = soma_ponderada + bónus_acorde_dominante
+        // Fórmula híbrida
         var familySum: [FragranceFamily: Double] = [:]
         var familyBonus: [FragranceFamily: Double] = [:]
 
@@ -73,26 +84,22 @@ struct ScentProfile {
             familyScores[family] = sum + (familyBonus[family, default: 0])
         }
 
-        // 3. Famílias dominantes
         let sortedFamilies = familyScores.sorted { $0.value > $1.value }
         guard let dominant = sortedFamilies.first else { return nil }
         let second = sortedFamilies.count > 1 ? sortedFamilies[1].key : nil
 
-        // 4. Top 8 acordes para o Aura Fingerprint
         let topAccords = accordSum
             .sorted { $0.value > $1.value }
             .prefix(8)
             .map { AccordScore(name: $0.key, score: $0.value, family: mapAccordToFamily($0.key)) }
 
-        // 5. Distribuição por família (mantida para compatibilidade de UI)
         var familyCount: [FragranceFamily: Int] = [:]
-        for perfume in perfumes {
+        for perfume in collection {
             familyCount[perfume.family, default: 0] += 1
         }
 
-        // 6. Top 10 notas mais frequentes
         var noteCount: [String: Int] = [:]
-        for perfume in perfumes {
+        for perfume in collection {
             for note in perfume.allNotes {
                 noteCount[note.lowercased(), default: 0] += 1
             }
@@ -108,7 +115,8 @@ struct ScentProfile {
             topNotes: topNotes,
             familyDistribution: familyCount,
             familyScores: familyScores,
-            topAccords: Array(topAccords)
+            topAccords: Array(topAccords),
+            wishlistAccords: Array(wishlistAccords)
         )
     }
 
@@ -158,42 +166,42 @@ struct ScentProfile {
     // MARK: - Label
     private static func labelFor(dominant: FragranceFamily, second: FragranceFamily?) -> String {
         switch (dominant, second) {
-        case (.woody, .oriental), (.oriental, .woody):  return "Heavy Oriental"
-        case (.woody, .floral), (.floral, .woody):      return "Floral Woody"
-        case (.woody, .fresh), (.fresh, .woody):        return "Aromatic Woody"
-        case (.woody, .spicy), (.spicy, .woody):        return "Spicy Woody"
-        case (.woody, .gourmand), (.gourmand, .woody):  return "Warm Woody"
-        case (.woody, .citrus), (.citrus, .woody):      return "Woody Citrus"
-        case (.woody, .aquatic), (.aquatic, .woody):    return "Woody Marine"
-        case (.woody, .herbal), (.herbal, .woody):      return "Aromatic Woody"
+        case (.woody, .oriental), (.oriental, .woody):   return "Heavy Oriental"
+        case (.woody, .floral), (.floral, .woody):       return "Floral Woody"
+        case (.woody, .fresh), (.fresh, .woody):         return "Aromatic Woody"
+        case (.woody, .spicy), (.spicy, .woody):         return "Spicy Woody"
+        case (.woody, .gourmand), (.gourmand, .woody):   return "Warm Woody"
+        case (.woody, .citrus), (.citrus, .woody):       return "Woody Citrus"
+        case (.woody, .aquatic), (.aquatic, .woody):     return "Woody Marine"
+        case (.woody, .herbal), (.herbal, .woody):       return "Aromatic Woody"
         case (.floral, .oriental), (.oriental, .floral): return "Floriental"
-        case (.floral, .fresh), (.fresh, .floral):      return "Fresh Floral"
+        case (.floral, .fresh), (.fresh, .floral):       return "Fresh Floral"
         case (.floral, .gourmand), (.gourmand, .floral): return "Gourmand Floral"
-        case (.floral, .spicy), (.spicy, .floral):      return "Spicy Floral"
-        case (.floral, .citrus), (.citrus, .floral):    return "Citrus Floral"
-        case (.floral, .aquatic), (.aquatic, .floral):  return "Aquatic Floral"
-        case (.floral, .herbal), (.herbal, .floral):    return "Botanical"
-        case (.oriental, .fresh), (.fresh, .oriental):  return "Fresh Oriental"
+        case (.floral, .spicy), (.spicy, .floral):       return "Spicy Floral"
+        case (.floral, .citrus), (.citrus, .floral):     return "Citrus Floral"
+        case (.floral, .aquatic), (.aquatic, .floral):   return "Aquatic Floral"
+        case (.floral, .herbal), (.herbal, .floral):     return "Botanical"
+        case (.oriental, .fresh), (.fresh, .oriental):   return "Fresh Oriental"
         case (.oriental, .gourmand), (.gourmand, .oriental): return "Gourmand Oriental"
-        case (.oriental, .spicy), (.spicy, .oriental):  return "Spicy Oriental"
+        case (.oriental, .spicy), (.spicy, .oriental):   return "Spicy Oriental"
         case (.oriental, .citrus), (.citrus, .oriental): return "Citrus Oriental"
         case (.oriental, .aquatic), (.aquatic, .oriental): return "Deep Marine"
         case (.oriental, .herbal), (.herbal, .oriental): return "Herbal Oriental"
-        case (.fresh, .citrus), (.citrus, .fresh):      return "Aqua Fresh"
-        case (.fresh, .aquatic), (.aquatic, .fresh):    return "Marine Fresh"
-        case (.fresh, .spicy), (.spicy, .fresh):        return "Spicy Fresh"
-        case (.fresh, .gourmand), (.gourmand, .fresh):  return "Fresh Gourmand"
-        case (.fresh, .herbal), (.herbal, .fresh):      return "Aromatic Fresh"
-        case (.citrus, .herbal), (.herbal, .citrus):    return "Aromatic Citrus"
-        case (.citrus, .aquatic), (.aquatic, .citrus):  return "Marine Citrus"
-        case (.citrus, .spicy), (.spicy, .citrus):      return "Spicy Citrus"
+        case (.fresh, .citrus), (.citrus, .fresh):       return "Aqua Fresh"
+        case (.fresh, .aquatic), (.aquatic, .fresh):     return "Marine Fresh"
+        case (.fresh, .spicy), (.spicy, .fresh):         return "Spicy Fresh"
+        case (.fresh, .gourmand), (.gourmand, .fresh):   return "Fresh Gourmand"
+        case (.fresh, .herbal), (.herbal, .fresh):       return "Aromatic Fresh"
+        case (.citrus, .herbal), (.herbal, .citrus):     return "Aromatic Citrus"
+        case (.citrus, .aquatic), (.aquatic, .citrus):   return "Marine Citrus"
+        case (.citrus, .spicy), (.spicy, .citrus):       return "Spicy Citrus"
         case (.citrus, .gourmand), (.gourmand, .citrus): return "Sweet Citrus"
-        case (.aquatic, .spicy), (.spicy, .aquatic):    return "Spicy Marine"
+        case (.aquatic, .spicy), (.spicy, .aquatic):     return "Spicy Marine"
         case (.aquatic, .gourmand), (.gourmand, .aquatic): return "Warm Marine"
-        case (.aquatic, .herbal), (.herbal, .aquatic):  return "Herbal Marine"
-        case (.gourmand, .spicy), (.spicy, .gourmand):  return "Spicy Gourmand"
+        case (.aquatic, .herbal), (.herbal, .aquatic):   return "Herbal Marine"
+        case (.gourmand, .spicy), (.spicy, .gourmand):   return "Spicy Gourmand"
         case (.gourmand, .herbal), (.herbal, .gourmand): return "Herbal Gourmand"
-        case (.spicy, .herbal), (.herbal, .spicy):      return "Aromatic Spicy"
+        case (.spicy, .herbal), (.herbal, .spicy):       return "Aromatic Spicy"
         case (.woody, nil):    return "Pure Woody"
         case (.floral, nil):   return "Soliflore"
         case (.oriental, nil): return "Pure Oriental"

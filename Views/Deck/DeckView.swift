@@ -9,10 +9,15 @@ struct DeckView: View {
     @State private var showingAddPerfume = false
     @State var viewModel = DeckViewModel()
     @State private var searchText = ""
+    @State private var selectedTab: DeckTab = .collection
+
+    private var basePerfumes: [Perfume] {
+        perfumes.filter { $0.isWishlist == (selectedTab == .wishlist) }
+    }
 
     private var filteredPerfumes: [Perfume] {
-        if searchText.isEmpty { return perfumes }
-        return perfumes.filter { perfume in
+        if searchText.isEmpty { return basePerfumes }
+        return basePerfumes.filter { perfume in
             perfume.name.localizedCaseInsensitiveContains(searchText) ||
             perfume.brand.localizedCaseInsensitiveContains(searchText) ||
             perfume.family.rawValue.localizedCaseInsensitiveContains(searchText)
@@ -24,11 +29,15 @@ struct DeckView: View {
     // MARK: - Body
     var body: some View {
         NavigationStack {
-            Group {
-                if !isSearching && perfumes.isEmpty {
-                    emptyStateView
-                } else {
-                    searchResultsView
+            VStack(spacing: 0) {
+                tabSwitcher
+
+                Group {
+                    if !isSearching && basePerfumes.isEmpty {
+                        emptyStateView
+                    } else {
+                        searchResultsView
+                    }
                 }
             }
             .navigationTitle("My Deck")
@@ -57,21 +66,77 @@ struct DeckView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("Are you sure you want to remove \(viewModel.perfumeToDelete?.name ?? "this perfume") from your deck?")
+                Text("Are you sure you want to remove \(viewModel.perfumeToDelete?.name ?? "this perfume") from your \(selectedTab == .wishlist ? "wishlist" : "deck")?")
             }
         }
     }
 
     // MARK: - Subviews
+    private var tabSwitcher: some View {
+        GeometryReader { geo in
+            let tabWidth = geo.size.width / 2
+            let blobSize: CGFloat = 142
+            let verticalNudge: CGFloat = 12 // aproxima o blob do texto, reduzindo o espaço vazio
+            let blobCenterY = geo.size.height - verticalNudge
+            let blobX = (selectedTab == .collection ? tabWidth / 2 : tabWidth + tabWidth / 2) - blobSize / 2
+
+            ZStack(alignment: .topLeading) {
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: Color.accentColor.opacity(0.90), location: 0.0),
+                                .init(color: Color.accentColor.opacity(0.36), location: 0.36),
+                                .init(color: Color.accentColor.opacity(0.0), location: 0.72)
+                            ]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: blobSize / 2
+                        )
+                    )
+                    .frame(width: blobSize, height: blobSize)
+                    .offset(x: blobX, y: blobCenterY - blobSize / 2)
+
+                HStack(spacing: 0) {
+                    tabButton(.collection, title: "Collection")
+                    tabButton(.wishlist, title: "Wishlist")
+                }
+            }
+        }
+        .frame(height: 48)
+        .clipped()
+        .padding(.horizontal)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
+    }
+
+    private func tabButton(_ tab: DeckTab, title: String) -> some View {
+        Button {
+            withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
+                selectedTab = tab
+            }
+        } label: {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(selectedTab == tab ? .primary : .secondary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+        }
+        .buttonStyle(.plain)
+    }
+
     private var emptyStateView: some View {
         VStack(spacing: 16) {
-            Image(systemName: "flask")
+            Image(systemName: selectedTab == .wishlist ? "heart" : "flask")
                 .font(.system(size: 64))
                 .foregroundStyle(.secondary)
-            Text("Your deck is empty")
+            Text(selectedTab == .wishlist ? "Your wishlist is empty" : "Your deck is empty")
                 .font(.title2)
                 .fontWeight(.semibold)
-            Text("Add your first perfume to get started")
+            Text(selectedTab == .wishlist
+                 ? "Save perfumes you'd like to try someday"
+                 : "Add your first perfume to get started")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -82,7 +147,7 @@ struct DeckView: View {
     private var searchResultsView: some View {
         List {
             if !filteredPerfumes.isEmpty {
-                Section("In Your Deck") {
+                Section(selectedTab == .wishlist ? "In Your Wishlist" : "In Your Deck") {
                     ForEach(filteredPerfumes) { perfume in
                         NavigationLink(destination: PerfumeDetailView(perfume: perfume)) {
                             PerfumeCardView(perfume: perfume)
@@ -153,7 +218,7 @@ struct DeckView: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            VStack(alignment: .trailing, spacing: 4) {
+            VStack(alignment: .trailing, spacing: 6) {
                 Text(mapFamily(result.family).rawValue)
                     .font(.caption2)
                     .fontWeight(.medium)
@@ -163,12 +228,35 @@ struct DeckView: View {
                     .foregroundStyle(mapFamily(result.family).color)
                     .clipShape(Capsule())
 
-                Button("+ Add") {
-                    addFromAPI(result)
+                HStack(spacing: 16) {
+                    Button {
+                        addFromAPI(result, isWishlist: false)
+                    } label: {
+                        VStack(spacing: 2) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(.accent)
+                            Text("Deck")
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundStyle(.accent)
+                        }
+                    }
+                    .buttonStyle(IconPressStyle(tint: .accentColor))
+
+                    Button {
+                        addFromAPI(result, isWishlist: true)
+                    } label: {
+                        VStack(spacing: 2) {
+                            Image(systemName: "heart.circle.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(.pink)
+                            Text("Wishlist")
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundStyle(.pink)
+                        }
+                    }
+                    .buttonStyle(IconPressStyle(tint: .pink))
                 }
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundStyle(.accent)
             }
         }
         .padding(.vertical, 4)
@@ -184,7 +272,7 @@ struct DeckView: View {
     }
 
     // MARK: - Helpers
-    private func addFromAPI(_ result: FragranceResult) {
+    private func addFromAPI(_ result: FragranceResult, isWishlist: Bool) {
         let perfume = Perfume(
             name: result.name,
             brand: result.brand,
@@ -194,7 +282,8 @@ struct DeckView: View {
             middleNotes: result.middleNotes ?? [],
             baseNotes: result.baseNotes ?? [],
             imageUrl: result.bestImageUrl,
-            accordsData: result.accordsJSON
+            accordsData: result.accordsJSON,
+            isWishlist: isWishlist
         )
         modelContext.insert(perfume)
         searchText = ""
@@ -268,6 +357,39 @@ struct DeckView: View {
         case "women", "feminine", "for women":       return .forWomen
         case "unisex", "for women and men", "both":  return .forWomenAndMen
         default:                                      return .forWomenAndMen
+        }
+    }
+}
+
+// MARK: - IconPressStyle
+/// Botão com feedback ao toque: encolhe ligeiramente e ganha uma sombra
+/// colorida enquanto está pressionado (substitui hover, que não existe no iPhone).
+struct IconPressStyle: ButtonStyle {
+    let tint: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.85 : 1.0)
+            .shadow(
+                color: tint.opacity(configuration.isPressed ? 0.5 : 0.0),
+                radius: configuration.isPressed ? 6 : 0,
+                y: configuration.isPressed ? 2 : 0
+            )
+            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
+    }
+}
+
+// MARK: - DeckTab
+enum DeckTab: String, CaseIterable, Identifiable {
+    case collection
+    case wishlist
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .collection: return "Collection"
+        case .wishlist: return "Wishlist"
         }
     }
 }
