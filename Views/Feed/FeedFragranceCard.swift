@@ -8,72 +8,75 @@
 import SwiftUI
 
 struct FeedFragranceCard: View {
-    
-    let fragrance: FeedFragrance
-    
+
+    let fragrance: FragranceResult
+    let onTap: () -> Void
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            
-            
-            // Image
-            Group {
-                if let imageUrl = fragrance.imageUrl,
-                   let url = URL(string: imageUrl) {
-                    AsyncImage(url: url) {phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill )
-                            
-                        default:
-                            placeholderView
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 0) {
+
+                // Image
+                Group {
+                    if let imageUrl = fragrance.bestImageUrl,
+                       let url = URL(string: imageUrl) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+
+                            default:
+                                placeholderView
+                            }
                         }
+                    } else {
+                        placeholderView
                     }
-                } else {
-                    placeholderView
                 }
+                .frame(height: 120)
+                .clipped()
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(fragrance.name)
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+
+                    Text(fragrance.brand)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+
+                    Text(fragrance.family.capitalized)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(familyColor.opacity(0.2))
+                        .foregroundStyle(familyColor)
+                        .clipShape(Capsule())
+                }
+                .padding(10)
             }
-            .frame(height: 120)
-            .clipped()
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(fragrance.name)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .lineLimit(1)
-                
-                Text(fragrance.brand)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                
-                Text(fragrance.family.capitalized)
-                    .font(.caption2)
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(familyColor.opacity(0.2))
-                    .foregroundStyle(familyColor)
-                    .clipShape(Capsule())
-            }
-            .padding(10)
+            .frame(width: 140)
+            .background(Color(.systemGray6).opacity(0.3))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
         }
-        .frame(width: 140)
-        .background(Color(.systemGray6).opacity(0.3))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .buttonStyle(.plain)
     }
-    
+
     private var placeholderView: some View {
-        ZStack{
+        ZStack {
             familyColor.opacity(0.15)
-            Image(systemName: "Flask")
+            Image(systemName: "flask")
                 .font(.system(size: 28))
                 .foregroundStyle(familyColor.opacity(0.5))
-            
         }
     }
+
     private var familyColor: Color {
         FragranceFamily(rawValue: fragrance.family.capitalized)?.color ?? .gray
-        }
     }
+}

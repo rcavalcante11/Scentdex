@@ -55,6 +55,40 @@ struct RecommendationDetailSheet: View {
         }
     }
 
+    /// Género final: a heurística pelo nome tem prioridade sobre o valor
+    /// bruto da API, porque já confirmámos casos em que a Fragella devolve
+    /// o género errado (ex: "Woman In Gold" marcado como "Men" na origem).
+    private var resolvedGender: PerfumeGender {
+        genderHeuristic(from: fragrance.name) ?? mapGender(fragrance.gender ?? "")
+    }
+
+    private var resolvedGenderLabel: String {
+        switch resolvedGender {
+        case .forMen:         return "Men"
+        case .forWomen:       return "Women"
+        case .forWomenAndMen: return "Unisex"
+        }
+    }
+
+    /// Deteta sinais inequívocos de género no nome do perfume (ex: "Woman",
+    /// "Homme", "For Her"). Devolve nil quando o nome não dá nenhum sinal
+    /// claro ou dá sinais conflituosos, para não sobrepor a API sem motivo.
+    private func genderHeuristic(from name: String) -> PerfumeGender? {
+        let tokens = name.lowercased()
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
+
+        let femaleTokens: Set<String> = ["woman", "women", "femme", "her", "lady", "elle"]
+        let maleTokens: Set<String> = ["man", "men", "homme", "him", "gentleman"]
+
+        let hasFemale = tokens.contains { femaleTokens.contains($0) }
+        let hasMale = tokens.contains { maleTokens.contains($0) }
+
+        if hasFemale && !hasMale { return .forWomen }
+        if hasMale && !hasFemale { return .forMen }
+        return nil
+    }
+
     // MARK: - Body
     var body: some View {
         ScrollView {
@@ -108,8 +142,8 @@ struct RecommendationDetailSheet: View {
                                 .foregroundStyle(resolvedFamily.color)
                                 .clipShape(Capsule())
 
-                            if let gender = fragrance.gender {
-                                Text(gender)
+                            if fragrance.gender != nil || genderHeuristic(from: fragrance.name) != nil {
+                                Text(resolvedGenderLabel)
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -309,7 +343,7 @@ struct RecommendationDetailSheet: View {
             name: fragrance.name,
             brand: fragrance.brand,
             family: resolvedFamily,
-            gender: mapGender(fragrance.gender ?? ""),
+            gender: resolvedGender,
             topNotes: fragrance.topNotes ?? [],
             middleNotes: fragrance.middleNotes ?? [],
             baseNotes: fragrance.baseNotes ?? [],

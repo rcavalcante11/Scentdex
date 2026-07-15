@@ -1,9 +1,16 @@
 import SwiftUI
+import SwiftData
 
 struct FeedView: View {
 
     // MARK: - Properties
     @State private var viewModel: FeedViewModel = FeedViewModel()
+    @Query private var perfumes: [Perfume]
+    @State private var selectedFragrance: FragranceResult?
+
+    private var ownedPerfumes: [Perfume] {
+        perfumes.filter { !$0.isWishlist }
+    }
 
     // MARK: - Body
     var body: some View {
@@ -36,6 +43,9 @@ struct FeedView: View {
         .task {
             await viewModel.loadContent()
         }
+        .sheet(item: $selectedFragrance) { fragrance in
+            RecommendationDetailSheet(fragrance: fragrance, ownedPerfumes: ownedPerfumes)
+        }
     }
 
     // MARK: - Sections
@@ -58,7 +68,7 @@ struct FeedView: View {
     private func fragranceSection(
         title: String,
         subtitle: String,
-        fragrances: [FeedFragrance],
+        fragrances: [FragranceResult],
         isLoading: Bool
     ) -> some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -72,7 +82,9 @@ struct FeedView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(fragrances) { fragrance in
-                            FeedFragranceCard(fragrance: fragrance)
+                            FeedFragranceCard(fragrance: fragrance) {
+                                selectedFragrance = fragrance
+                            }
                         }
                     }
                     .padding(.horizontal, 16)

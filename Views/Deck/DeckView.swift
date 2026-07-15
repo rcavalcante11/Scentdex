@@ -75,9 +75,8 @@ struct DeckView: View {
     private var tabSwitcher: some View {
         GeometryReader { geo in
             let tabWidth = geo.size.width / 2
-            let blobSize: CGFloat = 142
-            let verticalNudge: CGFloat = 12 // aproxima o blob do texto, reduzindo o espaço vazio
-            let blobCenterY = geo.size.height - verticalNudge
+            let blobSize: CGFloat = 100
+            let blobCenterY = geo.size.height // centro exactamente na linha de corte, para um meio-círculo limpo
             let blobX = (selectedTab == .collection ? tabWidth / 2 : tabWidth + tabWidth / 2) - blobSize / 2
 
             ZStack(alignment: .topLeading) {
@@ -85,9 +84,9 @@ struct DeckView: View {
                     .fill(
                         RadialGradient(
                             gradient: Gradient(stops: [
-                                .init(color: Color.accentColor.opacity(0.90), location: 0.0),
-                                .init(color: Color.accentColor.opacity(0.36), location: 0.36),
-                                .init(color: Color.accentColor.opacity(0.0), location: 0.72)
+                                .init(color: Color.accentColor.opacity(0.65), location: 0.0),
+                                .init(color: Color.accentColor.opacity(0.35), location: 0.55),
+                                .init(color: Color.accentColor.opacity(0.0), location: 1.0)
                             ]),
                             center: .center,
                             startRadius: 0,
@@ -277,7 +276,7 @@ struct DeckView: View {
             name: result.name,
             brand: result.brand,
             family: mapFamily(result.family),
-            gender: mapGender(result.gender ?? ""),
+            gender: resolvedGender(for: result),
             topNotes: result.topNotes ?? result.generalNotes ?? [],
             middleNotes: result.middleNotes ?? [],
             baseNotes: result.baseNotes ?? [],
@@ -358,6 +357,31 @@ struct DeckView: View {
         case "unisex", "for women and men", "both":  return .forWomenAndMen
         default:                                      return .forWomenAndMen
         }
+    }
+
+    /// Deteta sinais inequívocos de género no nome do perfume (ex: "Woman",
+    /// "Homme", "For Her"). Devolve nil quando o nome não dá sinal claro ou
+    /// dá sinais conflituosos, para não sobrepor a API sem motivo. A
+    /// heurística tem prioridade sobre a API porque já confirmámos casos em
+    /// que a Fragella devolve o género errado na origem.
+    private func genderHeuristic(from name: String) -> PerfumeGender? {
+        let tokens = name.lowercased()
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
+
+        let femaleTokens: Set<String> = ["woman", "women", "femme", "her", "lady", "elle"]
+        let maleTokens: Set<String> = ["man", "men", "homme", "him", "gentleman"]
+
+        let hasFemale = tokens.contains { femaleTokens.contains($0) }
+        let hasMale = tokens.contains { maleTokens.contains($0) }
+
+        if hasFemale && !hasMale { return .forWomen }
+        if hasMale && !hasFemale { return .forMen }
+        return nil
+    }
+
+    private func resolvedGender(for result: FragranceResult) -> PerfumeGender {
+        genderHeuristic(from: result.name) ?? mapGender(result.gender ?? "")
     }
 }
 
