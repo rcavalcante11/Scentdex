@@ -7,6 +7,7 @@ struct FeedView: View {
     @State private var viewModel: FeedViewModel = FeedViewModel()
     @Query private var perfumes: [Perfume]
     @State private var selectedFragrance: FragranceResult?
+    @State private var selectedTab: FeedTab = .discover
 
     private var ownedPerfumes: [Perfume] {
         perfumes.filter { !$0.isWishlist }
@@ -15,27 +16,34 @@ struct FeedView: View {
     // MARK: - Body
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 32) {
+            VStack(spacing: 0) {
+                tabSwitcher
 
-                    fragranceSection(
-                        title: "Trending Now",
-                        subtitle: "Most loved this season",
-                        fragrances: viewModel.trending,
-                        isLoading: viewModel.isLoadingFragrances
-                    )
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 32) {
+                        switch selectedTab {
+                        case .discover:
+                            fragranceSection(
+                                title: "Trending Now",
+                                subtitle: "Most loved this season",
+                                fragrances: viewModel.trending,
+                                isLoading: viewModel.isLoadingFragrances
+                            )
 
-                    articlesSection
+                            fragranceSection(
+                                title: "New Releases",
+                                subtitle: "Fresh from the houses",
+                                fragrances: viewModel.newReleases,
+                                isLoading: viewModel.isLoadingFragrances
+                            )
 
-                    fragranceSection(
-                        title: "New Releases",
-                        subtitle: "Fresh from the houses",
-                        fragrances: viewModel.newReleases,
-                        isLoading: viewModel.isLoadingFragrances
-                    )
+                        case .articles:
+                            articlesSection
+                        }
+                    }
+                    .padding(.top, 16)
+                    .padding(.bottom, 32)
                 }
-                .padding(.top, 8)
-                .padding(.bottom, 32)
             }
             .navigationTitle("Feed")
             .navigationBarTitleDisplayMode(.large)
@@ -46,6 +54,60 @@ struct FeedView: View {
         .sheet(item: $selectedFragrance) { fragrance in
             RecommendationDetailSheet(fragrance: fragrance, ownedPerfumes: ownedPerfumes)
         }
+    }
+
+    // MARK: - Tab Switcher
+    private var tabSwitcher: some View {
+        GeometryReader { geo in
+            let tabWidth = geo.size.width / 2
+            let blobSize: CGFloat = 100
+            let blobCenterY = geo.size.height // centro exactamente na linha de corte, para um meio-círculo limpo
+            let blobX = (selectedTab == .discover ? tabWidth / 2 : tabWidth + tabWidth / 2) - blobSize / 2
+
+            ZStack(alignment: .topLeading) {
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: Color.accentColor.opacity(0.65), location: 0.0),
+                                .init(color: Color.accentColor.opacity(0.35), location: 0.55),
+                                .init(color: Color.accentColor.opacity(0.0), location: 1.0)
+                            ]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: blobSize / 2
+                        )
+                    )
+                    .frame(width: blobSize, height: blobSize)
+                    .offset(x: blobX, y: blobCenterY - blobSize / 2)
+
+                HStack(spacing: 0) {
+                    feedTabButton(.discover, title: "Discover")
+                    feedTabButton(.articles, title: "Articles")
+                }
+            }
+        }
+        .frame(height: 48)
+        .clipped()
+        .padding(.horizontal)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
+    }
+
+    private func feedTabButton(_ tab: FeedTab, title: String) -> some View {
+        Button {
+            withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
+                selectedTab = tab
+            }
+        } label: {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(selectedTab == tab ? .primary : .secondary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Sections
@@ -127,4 +189,12 @@ struct FeedView: View {
             .foregroundStyle(.secondary)
             .padding(.horizontal, 16)
     }
+}
+
+// MARK: - FeedTab
+enum FeedTab: String, CaseIterable, Identifiable {
+    case discover
+    case articles
+
+    var id: String { rawValue }
 }
