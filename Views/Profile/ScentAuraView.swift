@@ -82,6 +82,10 @@ struct ScentAuraView: View {
                 .background(Color.black)
             }
         }
+        .refreshable {
+            await viewModel.refresh(for: profile)
+        }
+        .tint(.white)
         .ignoresSafeArea(edges: .top)
         .onAppear {
             animate = true
@@ -378,5 +382,3 @@ struct ScentAuraView: View {
         wishlistAccords: []
     ))
 }
-
-

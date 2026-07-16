@@ -16,34 +16,31 @@ struct FeedView: View {
     // MARK: - Body
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                tabSwitcher
+            ScrollView {
+                VStack(alignment: .leading, spacing: 32) {
+                    tabSwitcher
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 32) {
-                        switch selectedTab {
-                        case .discover:
-                            fragranceSection(
-                                title: "Trending Now",
-                                subtitle: "Most loved this season",
-                                fragrances: viewModel.trending,
-                                isLoading: viewModel.isLoadingFragrances
-                            )
+                    switch selectedTab {
+                    case .discover:
+                        fragranceSection(
+                            title: "Trending Now",
+                            subtitle: "Most loved this season",
+                            fragrances: viewModel.trending,
+                            isLoading: viewModel.isLoadingFragrances
+                        )
 
-                            fragranceSection(
-                                title: "New Releases",
-                                subtitle: "Fresh from the houses",
-                                fragrances: viewModel.newReleases,
-                                isLoading: viewModel.isLoadingFragrances
-                            )
+                        fragranceSection(
+                            title: "New Releases",
+                            subtitle: "Fresh from the houses",
+                            fragrances: viewModel.newReleases,
+                            isLoading: viewModel.isLoadingFragrances
+                        )
 
-                        case .articles:
-                            articlesSection
-                        }
+                    case .articles:
+                        articlesSection
                     }
-                    .padding(.top, 16)
-                    .padding(.bottom, 32)
                 }
+                .padding(.bottom, 32)
             }
             .navigationTitle("Feed")
             .navigationBarTitleDisplayMode(.large)

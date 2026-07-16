@@ -26,6 +26,18 @@ class ScentAuraViewModel {
         isLoading = false
     }
 
+    /// Força uma nova geração mesmo que já exista uma descrição — usado pelo
+    /// pull-to-refresh, para permitir ao utilizador pedir uma nova leitura do
+    /// perfil sem ter de sair e voltar à tab.
+    @MainActor
+    func refresh(for profile: ScentProfile) async {
+        isLoading = true
+        let result = await fetchProfile(for: profile)
+        generatedLabel = result.label
+        description = result.description
+        isLoading = false
+    }
+
     // MARK: - Private
     private func fetchProfile(for profile: ScentProfile) async -> (label: String, description: String) {
         let prompt = buildPrompt(for: profile)

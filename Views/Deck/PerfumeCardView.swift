@@ -54,17 +54,20 @@ struct PerfumeCardView: View {
     private var backgroundView: some View {
         if let imageUrl = perfume.imageUrl,
            let url = URL(string: imageUrl) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding(8)
-                case .empty, .failure:
-                    familyBackground
-                @unknown default:
-                    familyBackground
+            GeometryReader { geo in
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .padding(8)
+                    case .empty, .failure:
+                        familyBackground
+                    @unknown default:
+                        familyBackground
+                    }
                 }
             }
         } else {

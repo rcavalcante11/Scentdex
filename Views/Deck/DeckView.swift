@@ -29,17 +29,59 @@ struct DeckView: View {
     // MARK: - Body
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
+            List {
                 tabSwitcher
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
 
-                Group {
-                    if !isSearching && basePerfumes.isEmpty {
-                        emptyStateView
-                    } else {
-                        searchResultsView
+                if !isSearching && basePerfumes.isEmpty {
+                    emptyStateView
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                } else {
+                    if !filteredPerfumes.isEmpty {
+                        Section(selectedTab == .wishlist ? "In Your Wishlist" : "In Your Deck") {
+                            ForEach(filteredPerfumes) { perfume in
+                                NavigationLink(destination: PerfumeDetailView(perfume: perfume)) {
+                                    PerfumeCardView(perfume: perfume)
+                                        .listRowInsets(EdgeInsets())
+                                        .listRowBackground(Color.clear)
+                                }
+                            }
+                            .onDelete { indexSet in
+                                for index in indexSet {
+                                    viewModel.confirmDelete(filteredPerfumes[index])
+                                }
+                            }
+                        }
+                    }
+
+                    if isSearching {
+                        Section("From Database") {
+                            if viewModel.isSearchingAPI {
+                                HStack {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                    Text("Searching database...")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            } else if viewModel.apiSearchResults.isEmpty {
+                                Text("No results found")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                ForEach(viewModel.apiSearchResults) { result in
+                                    apiResultRow(result)
+                                }
+                            }
+                        }
                     }
                 }
             }
+            .listStyle(.plain)
             .navigationTitle("My Deck")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -141,50 +183,8 @@ struct DeckView: View {
                 .multilineTextAlignment(.center)
         }
         .padding()
-    }
-
-    private var searchResultsView: some View {
-        List {
-            if !filteredPerfumes.isEmpty {
-                Section(selectedTab == .wishlist ? "In Your Wishlist" : "In Your Deck") {
-                    ForEach(filteredPerfumes) { perfume in
-                        NavigationLink(destination: PerfumeDetailView(perfume: perfume)) {
-                            PerfumeCardView(perfume: perfume)
-                                .listRowInsets(EdgeInsets())
-                                .listRowBackground(Color.clear)
-                        }
-                    }
-                    .onDelete { indexSet in
-                        for index in indexSet {
-                            viewModel.confirmDelete(filteredPerfumes[index])
-                        }
-                    }
-                }
-            }
-
-            if isSearching {
-                Section("From Database") {
-                    if viewModel.isSearchingAPI {
-                        HStack {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                            Text("Searching database...")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    } else if viewModel.apiSearchResults.isEmpty {
-                        Text("No results found")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(viewModel.apiSearchResults) { result in
-                            apiResultRow(result)
-                        }
-                    }
-                }
-            }
-        }
-        .listStyle(.plain)
+        .padding(.top, 60)
+        .frame(maxWidth: .infinity)
     }
 
     private func apiResultRow(_ result: FragranceResult) -> some View {
