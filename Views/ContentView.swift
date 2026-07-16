@@ -33,6 +33,8 @@ struct ContentView: View {
                 ScentAuraView(profile: profile)
                     .navigationTitle("Scent Aura")
                     .navigationBarTitleDisplayMode(.inline)
+                    .toolbarBackground(.hidden, for: .navigationBar)
+                    .toolbarColorScheme(.dark, for: .navigationBar)
             }
         } else {
             emptyAuraView

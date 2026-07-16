@@ -14,78 +14,77 @@ struct ScentAuraView: View {
 
     // MARK: - Body
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
+        ZStack {
+            Color.black.ignoresSafeArea()
 
-                ZStack(alignment: .bottom) {
-                    blobsLayer
+            ScrollView {
+                VStack(spacing: 0) {
 
-                    LinearGradient(
-                        colors: [.black.opacity(0.3), .clear],
-                        startPoint: .top,
-                        endPoint: .center
-                    )
+                    ZStack(alignment: .bottom) {
+                        blobsLayer
 
-                    VStack {
-                        Spacer()
-                        LinearGradient(
-                            colors: [.clear, .black],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .frame(height: 200)
-                    }
+                        VStack {
+                            Spacer()
+                            LinearGradient(
+                                colors: [.clear, .black],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            .frame(height: 200)
+                        }
 
-                    VStack(alignment: .leading, spacing: 0) {
-                        Spacer().frame(height: 120)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Spacer().frame(height: 120)
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Your Scent Aura")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .tracking(3)
-                                .foregroundStyle(.white.opacity(0.5))
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Your Scent Aura")
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .tracking(3)
+                                    .foregroundStyle(.white.opacity(0.5))
 
-                            Text(viewModel.generatedLabel.isEmpty ? profile.profileTitle : viewModel.generatedLabel)
-                                .font(.system(size: 34, weight: .medium))
-                                .foregroundStyle(.white)
+                                Text(viewModel.generatedLabel.isEmpty ? profile.profileTitle : viewModel.generatedLabel)
+                                    .font(.system(size: 34, weight: .medium))
+                                    .foregroundStyle(.white)
 
-                            HStack(spacing: 8) {
-                                ForEach(topAccordTags, id: \.self) { name in
-                                    accordTag(name)
+                                HStack(spacing: 8) {
+                                    ForEach(topAccordTags, id: \.self) { name in
+                                        accordTag(name)
+                                    }
                                 }
                             }
+                            .padding(.horizontal, 28)
+
+                            Divider()
+                                .background(.white.opacity(0.15))
+                                .padding(.vertical, 24)
+                                .padding(.horizontal, 28)
+
+                            descriptionSection
+                                .padding(.horizontal, 28)
+
+                            auraFingerprintSection
+                                .padding(.horizontal, 28)
+                                .padding(.top, 16)
+
+                            Spacer().frame(height: 40)
                         }
-                        .padding(.horizontal, 28)
-
-                        Divider()
-                            .background(.white.opacity(0.15))
-                            .padding(.vertical, 24)
-                            .padding(.horizontal, 28)
-
-                        descriptionSection
-                            .padding(.horizontal, 28)
-
-                        auraFingerprintSection
-                            .padding(.horizontal, 28)
-                            .padding(.top, 16)
-
-                        Spacer().frame(height: 40)
                     }
-                }
-                .frame(minHeight: 500)
+                    .frame(minHeight: 500)
 
-                VStack(alignment: .leading, spacing: 24) {
-                    RecommendationCarouselView(profile: profile)
+                    VStack(alignment: .leading, spacing: 24) {
+                        RecommendationCarouselView(profile: profile)
+                    }
+                    .padding(24)
+                    .background(Color.black)
                 }
-                .padding(24)
-                .background(Color.black)
             }
+            .refreshable {
+                await viewModel.refresh(for: profile)
+            }
+            .tint(.white)
+            .scrollContentBackground(.hidden)
         }
-        .refreshable {
-            await viewModel.refresh(for: profile)
-        }
-        .tint(.white)
         .ignoresSafeArea(edges: .top)
         .onAppear {
             animate = true
@@ -319,12 +318,12 @@ struct ScentAuraView: View {
         let c2 = blobColors.count > 1 ? blobColors[1] : blobColors[0]
         let c3 = blobColors.count > 2 ? blobColors[2] : blobColors[0]
         return [
-            BlobConfig(color: c1,              size: 300, fromX: -80,  fromY: -120, toX: 60,   toY: -30,  toScale: 1.25, duration: 3.2, delay: 0),
-            BlobConfig(color: c2,              size: 280, fromX: 90,   fromY: 70,   toX: -50,  toY: 100,  toScale: 0.85, duration: 2.8, delay: 0.3),
-            BlobConfig(color: c3,              size: 280, fromX: 40,   fromY: -90,  toX: -70,  toY: 50,   toScale: 1.15, duration: 4.0, delay: 0.8),
-            BlobConfig(color: c1.opacity(0.6), size: 200, fromX: -60,  fromY: 90,   toX: 70,   toY: -50,  toScale: 1.3,  duration: 2.4, delay: 0.5),
-            BlobConfig(color: c2.opacity(0.5), size: 180, fromX: 0,    fromY: -50,  toX: -30,  toY: 80,   toScale: 0.9,  duration: 3.6, delay: 1.2),
-            BlobConfig(color: c3.opacity(0.5), size: 180, fromX: -30,  fromY: 60,   toX: 50,   toY: -70,  toScale: 1.1,  duration: 3.0, delay: 0.9)
+            BlobConfig(color: c1,              size: 380, fromX: -120, fromY: -160, toX: 110,  toY: -20,  toScale: 1.4,  duration: 3.2, delay: 0),
+            BlobConfig(color: c2,              size: 340, fromX: 130,  fromY: 100,  toX: -100, toY: 140,  toScale: 0.7,  duration: 2.8, delay: 0.3),
+            BlobConfig(color: c3,              size: 340, fromX: 70,   fromY: -130, toX: -120, toY: 80,   toScale: 1.3,  duration: 4.0, delay: 0.8),
+            BlobConfig(color: c1.opacity(0.6), size: 260, fromX: -100, fromY: 130,  toX: 110,  toY: -80,  toScale: 1.45, duration: 2.4, delay: 0.5),
+            BlobConfig(color: c2.opacity(0.5), size: 230, fromX: 0,    fromY: -80,  toX: -60,  toY: 120,  toScale: 0.75, duration: 3.6, delay: 1.2),
+            BlobConfig(color: c3.opacity(0.5), size: 230, fromX: -60,  fromY: 100,  toX: 90,   toY: -110, toScale: 1.3,  duration: 3.0, delay: 0.9)
         ]
     }
 
@@ -334,7 +333,7 @@ struct ScentAuraView: View {
                 Circle()
                     .fill(config.color)
                     .frame(width: config.size, height: config.size)
-                    .blur(radius: 55)
+                    .blur(radius: 45)
                     .blendMode(.screen)
                     .offset(x: animate ? config.toX : config.fromX, y: animate ? config.toY : config.fromY)
                     .scaleEffect(animate ? config.toScale : 1.0)
@@ -344,6 +343,7 @@ struct ScentAuraView: View {
                     )
             }
         }
+        .compositingGroup()
     }
 
     private func parseMarkdown(_ text: String) -> AttributedString {
