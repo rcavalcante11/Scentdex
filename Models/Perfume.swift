@@ -30,7 +30,9 @@ class Perfume {
         imageUrl: String? = nil,
         accordsData: String? = nil,
         isWishlist: Bool = false
-    ){
+    )
+    
+    {
         self.id = id
         self.name = name
         self.brand = brand

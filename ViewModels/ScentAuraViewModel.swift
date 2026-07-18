@@ -74,7 +74,9 @@ class ScentAuraViewModel {
                   let content = json["content"] as? [[String: Any]],
                   let text = content.first?["text"] as? String
             else {
+                #if DEBUG
                 print("🧠 Failed to parse response")
+                #endif
                 return fallback(for: profile)
             }
 
@@ -89,14 +91,18 @@ class ScentAuraViewModel {
                   let label = parsed["label"],
                   let desc = parsed["description"]
             else {
+                #if DEBUG
                 print("🧠 Failed to parse JSON")
+                #endif
                 return fallback(for: profile)
             }
 
             return (label: label, description: desc)
 
         } catch {
+            #if DEBUG
             print("🧠 Error:", error.localizedDescription)
+            #endif
             return fallback(for: profile)
         }
     }

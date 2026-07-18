@@ -78,9 +78,11 @@ class PerfumeService {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
 
+            #if DEBUG
             if let json = String(data: data, encoding: .utf8) {
                 print("📦 Response:", json.prefix(500))
             }
+            #endif
 
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
@@ -89,7 +91,9 @@ class PerfumeService {
 
             return try JSONDecoder().decode([T].self, from: data)
         } catch {
+            #if DEBUG
             print("❌ Fragella error:", error.localizedDescription, urlString)
+            #endif
             throw error
         }
     }
