@@ -4,7 +4,6 @@ struct ScentAuraView: View {
 
     // MARK: - Properties
     let profile: ScentProfile
-    @State private var animate = false
     @State private var viewModel = ScentAuraViewModel()
     @State private var descriptionExpanded = false
     @State private var fingerprintExpanded = false
@@ -17,11 +16,13 @@ struct ScentAuraView: View {
         ZStack {
             Color.black.ignoresSafeArea()
 
+            blobsLayer
+                .ignoresSafeArea()
+
             ScrollView {
                 VStack(spacing: 0) {
 
                     ZStack(alignment: .bottom) {
-                        blobsLayer
 
                         VStack {
                             Spacer()
@@ -76,7 +77,7 @@ struct ScentAuraView: View {
                         RecommendationCarouselView(profile: profile)
                     }
                     .padding(24)
-                    .background(Color.black)
+                    .background(Color.black.opacity(0.8))
                 }
             }
             .refreshable {
@@ -87,7 +88,6 @@ struct ScentAuraView: View {
         }
         .ignoresSafeArea(edges: .top)
         .onAppear {
-            animate = true
             Task { await viewModel.generateDescription(for: profile) }
         }
         .onChange(of: profile.topAccords.map { $0.name }) { _, _ in
@@ -317,33 +317,46 @@ struct ScentAuraView: View {
         let c1 = blobColors[0]
         let c2 = blobColors.count > 1 ? blobColors[1] : blobColors[0]
         let c3 = blobColors.count > 2 ? blobColors[2] : blobColors[0]
+
+        // 6 blobs distribuídos uniformemente pelo mesmo laço em "8" (espaçados
+        // de 60° em 60°, para nunca ficarem todos amontoados no mesmo lóbulo),
+        // cada um com velocidade ligeiramente diferente para um movimento mais
+        // orgânico em vez de perfeitamente sincronizado.
         return [
-            BlobConfig(color: c1,              size: 380, fromX: -120, fromY: -160, toX: 110,  toY: -20,  toScale: 1.4,  duration: 3.2, delay: 0),
-            BlobConfig(color: c2,              size: 340, fromX: 130,  fromY: 100,  toX: -100, toY: 140,  toScale: 0.7,  duration: 2.8, delay: 0.3),
-            BlobConfig(color: c3,              size: 340, fromX: 70,   fromY: -130, toX: -120, toY: 80,   toScale: 1.3,  duration: 4.0, delay: 0.8),
-            BlobConfig(color: c1.opacity(0.6), size: 260, fromX: -100, fromY: 130,  toX: 110,  toY: -80,  toScale: 1.45, duration: 2.4, delay: 0.5),
-            BlobConfig(color: c2.opacity(0.5), size: 230, fromX: 0,    fromY: -80,  toX: -60,  toY: 120,  toScale: 0.75, duration: 3.6, delay: 1.2),
-            BlobConfig(color: c3.opacity(0.5), size: 230, fromX: -60,  fromY: 100,  toX: 90,   toY: -110, toScale: 1.3,  duration: 3.0, delay: 0.9)
+            BlobConfig(color: c1,              size: 380, ampX: 145, ampY: 390, baseScale: 1.05, scaleAmp: 0.35, speed: 0.72, phaseOffset: 0),
+            BlobConfig(color: c2,              size: 340, ampX: 130, ampY: 375, baseScale: 1.0,  scaleAmp: 0.3,  speed: 0.66, phaseOffset: .pi / 3),
+            BlobConfig(color: c3,              size: 340, ampX: 135, ampY: 385, baseScale: 1.05, scaleAmp: 0.32, speed: 0.78, phaseOffset: 2 * .pi / 3),
+            BlobConfig(color: c1.opacity(0.6), size: 260, ampX: 115, ampY: 360, baseScale: 1.0,  scaleAmp: 0.4,  speed: 0.84, phaseOffset: .pi),
+            BlobConfig(color: c2.opacity(0.5), size: 230, ampX: 110, ampY: 340, baseScale: 0.95, scaleAmp: 0.28, speed: 0.60, phaseOffset: 4 * .pi / 3),
+            BlobConfig(color: c3.opacity(0.5), size: 230, ampX: 125, ampY: 365, baseScale: 1.0,  scaleAmp: 0.3,  speed: 0.90, phaseOffset: 5 * .pi / 3)
         ]
     }
 
     private var blobsLayer: some View {
-        ZStack {
-            ForEach(Array(blobConfigs.enumerated()), id: \.offset) { index, config in
-                Circle()
-                    .fill(config.color)
-                    .frame(width: config.size, height: config.size)
-                    .blur(radius: 45)
-                    .blendMode(.screen)
-                    .offset(x: animate ? config.toX : config.fromX, y: animate ? config.toY : config.fromY)
-                    .scaleEffect(animate ? config.toScale : 1.0)
-                    .animation(
-                        .easeInOut(duration: config.duration).repeatForever(autoreverses: true).delay(config.delay),
-                        value: animate
-                    )
+        TimelineView(.animation) { timeline in
+            let t = timeline.date.timeIntervalSinceReferenceDate
+
+            ZStack {
+                ForEach(Array(blobConfigs.enumerated()), id: \.offset) { index, config in
+                    let phase = t * config.speed + config.phaseOffset
+                    // Lemniscata vertical: x oscila ao dobro da frequência de y,
+                    // criando o cruzamento ao centro típico do símbolo do infinito
+                    // (aqui na vertical, tipo o número 8, do header até ao fundo).
+                    let x = config.ampX * sin(2 * phase)
+                    let y = config.ampY * sin(phase)
+                    let scale = config.baseScale + config.scaleAmp * sin(phase * 0.5)
+
+                    Circle()
+                        .fill(config.color)
+                        .frame(width: config.size, height: config.size)
+                        .blur(radius: 45)
+                        .blendMode(.screen)
+                        .offset(x: x, y: y)
+                        .scaleEffect(scale)
+                }
             }
+            .compositingGroup()
         }
-        .compositingGroup()
     }
 
     private func parseMarkdown(_ text: String) -> AttributedString {
@@ -358,9 +371,12 @@ struct ScentAuraView: View {
     private struct BlobConfig {
         let color: Color
         let size: CGFloat
-        let fromX, fromY, toX, toY: CGFloat
-        let toScale: CGFloat
-        let duration, delay: Double
+        let ampX: CGFloat
+        let ampY: CGFloat
+        let baseScale: CGFloat
+        let scaleAmp: CGFloat
+        let speed: Double       // radianos por segundo — velocidade ao longo do laço
+        let phaseOffset: Double // posição inicial no laço (radianos), espalha os blobs
     }
 }
 

@@ -67,6 +67,11 @@ class ScentAuraViewModel {
             let (data, response) = try await URLSession.shared.data(for: request)
 
             guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+                #if DEBUG
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                let body = String(data: data, encoding: .utf8) ?? "no body"
+                print("🧠 HTTP error \(statusCode):", body.prefix(500))
+                #endif
                 return fallback(for: profile)
             }
 
