@@ -7,10 +7,11 @@ struct RecommendationCardView: View {
 
     // MARK: - Body
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 0) {
 
-          
             ZStack {
+                Color.white.opacity(0.06)
+
                 if let imageUrl = fragrance.bestImageUrl,
                    let url = URL(string: imageUrl) {
                     AsyncImage(url: url) { phase in
@@ -18,6 +19,7 @@ struct RecommendationCardView: View {
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
+                                .padding(10)
                         } else {
                             bottlePlaceholder
                         }
@@ -29,42 +31,35 @@ struct RecommendationCardView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 90)
 
-            // Family pill
-            Text(resolvedFamily.rawValue)
-                .font(.caption)
-                .fontWeight(.medium)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(resolvedFamily.color.opacity(0.2))
-                .foregroundStyle(resolvedFamily.color)
-                .clipShape(Capsule())
+            VStack(alignment: .leading, spacing: 6) {
+                Text(resolvedFamily.rawValue)
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(resolvedFamily.color.opacity(0.25), in: Capsule())
+                    .foregroundStyle(resolvedFamily.color)
 
-            Spacer()
-
-            // Info
-            VStack(alignment: .leading, spacing: 4) {
                 Text(fragrance.name)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .lineLimit(2)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.white)
 
                 Text(fragrance.brand)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                if let gender = fragrance.gender {
-                    Text(gender)
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                }
+                    .foregroundStyle(.white.opacity(0.6))
+                    .lineLimit(1)
             }
+            .padding(12)
         }
-        .padding(16)
         .frame(width: 160, height: 220)
-        .background(Color(.systemBackground))
+        .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(.white.opacity(0.18), lineWidth: 0.5)
+        )
     }
 
     // MARK: - Helpers
@@ -75,7 +70,6 @@ struct RecommendationCardView: View {
     private var bottlePlaceholder: some View {
         ZStack {
             resolvedFamily.color.opacity(0.08)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
             Image(systemName: "flask")
                 .font(.system(size: 28))
                 .foregroundStyle(resolvedFamily.color.opacity(0.4))

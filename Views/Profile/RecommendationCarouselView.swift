@@ -96,7 +96,6 @@ struct RecommendationCarouselView: View {
                 }
             }
         }
-        .padding(.horizontal, 24)
     }
 
     // MARK: - Content
@@ -157,7 +156,6 @@ struct RecommendationCarouselView: View {
                             startPoint: .init(x: 0.5, y: 0.3),
                             endPoint: .bottom
                         )
-                        .ignoresSafeArea(edges: .bottom)
                         .allowsHitTesting(false)
 
                         // Pill por cima de tudo
@@ -181,7 +179,6 @@ struct RecommendationCarouselView: View {
                         .padding(.bottom, 16)
                     }
                     .frame(height: 280) // altura fixa do preview
-                    .clipped()
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: 0.35)) {
                             expanded = true
@@ -202,8 +199,8 @@ struct RecommendationCarouselView: View {
     // MARK: - Grid View
     private func gridView(_ perfumes: [FragranceResult]) -> some View {
         LazyVGrid(
-            columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
-            spacing: 12
+            columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible(), spacing: 18)],
+            spacing: 18
         ) {
             ForEach(Array(perfumes.enumerated()), id: \.element.id) { index, perfume in
                 if index < 4 {
@@ -232,7 +229,6 @@ struct RecommendationCarouselView: View {
                 }
             }
         }
-        .padding(.horizontal, 24)
     }
 
     // MARK: - List View
@@ -264,17 +260,18 @@ struct RecommendationCarouselView: View {
                 }
             }
         }
-        .padding(.horizontal, 24)
     }
 
     private func listCard(_ perfume: FragranceResult) -> some View {
         HStack(spacing: 12) {
-            Group {
+            ZStack {
+                Color.white.opacity(0.06)
+
                 if let imageUrl = perfume.bestImageUrl,
                    let url = URL(string: imageUrl) {
                     AsyncImage(url: url) { phase in
                         if case .success(let image) = phase {
-                            image.resizable().aspectRatio(contentMode: .fit)
+                            image.resizable().aspectRatio(contentMode: .fit).padding(6)
                         } else {
                             Image(systemName: "flask")
                                 .foregroundStyle(.secondary)
@@ -286,7 +283,6 @@ struct RecommendationCarouselView: View {
                 }
             }
             .frame(width: 56, height: 72)
-            .background(Color.secondary.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 10))
 
             VStack(alignment: .leading, spacing: 4) {
@@ -312,15 +308,19 @@ struct RecommendationCarouselView: View {
                 .foregroundStyle(.tertiary)
         }
         .padding(12)
-        .background(Color.secondary.opacity(0.08))
+        .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(.white.opacity(0.15), lineWidth: 0.5)
+        )
     }
 
     // MARK: - Loading / Empty
     private var loadingView: some View {
         LazyVGrid(
-            columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
-            spacing: 12
+            columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
+            spacing: 10
         ) {
             ForEach(0..<2, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: 16)
@@ -328,13 +328,11 @@ struct RecommendationCarouselView: View {
                     .frame(height: 200)
             }
         }
-        .padding(.horizontal, 24)
     }
 
     private var emptyView: some View {
         Text("No recommendations available yet")
             .font(.subheadline)
             .foregroundStyle(.secondary)
-            .padding(.horizontal, 24)
     }
 }

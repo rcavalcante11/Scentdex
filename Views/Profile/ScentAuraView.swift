@@ -19,20 +19,24 @@ struct ScentAuraView: View {
             blobsLayer
                 .ignoresSafeArea()
 
+            // Escurecimento global e contínuo — cobre o ecrã todo (não só o
+            // header), para não haver fronteira visível entre secções.
+            LinearGradient(
+                stops: [
+                    .init(color: .black.opacity(0.1), location: 0.0),
+                    .init(color: .black.opacity(0.45), location: 0.4),
+                    .init(color: .black.opacity(0.6), location: 0.65),
+                    .init(color: .black.opacity(0.6), location: 1.0)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
             ScrollView {
                 VStack(spacing: 0) {
 
                     ZStack(alignment: .bottom) {
-
-                        VStack {
-                            Spacer()
-                            LinearGradient(
-                                colors: [.clear, .black],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                            .frame(height: 200)
-                        }
 
                         VStack(alignment: .leading, spacing: 0) {
                             Spacer().frame(height: 120)
@@ -77,7 +81,13 @@ struct ScentAuraView: View {
                         RecommendationCarouselView(profile: profile)
                     }
                     .padding(24)
-                    .background(Color.black.opacity(0.8))
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(.white.opacity(0.15), lineWidth: 0.5)
+                    )
+                    .padding(.horizontal, 24)
                 }
             }
             .refreshable {
@@ -194,11 +204,10 @@ struct ScentAuraView: View {
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 12)
-                .background(.white.opacity(0.07))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(.white.opacity(0.1), lineWidth: 0.5)
+                        .stroke(.white.opacity(0.25), lineWidth: 0.5)
                 )
             }
 
@@ -294,9 +303,11 @@ struct ScentAuraView: View {
             .fontWeight(.medium)
             .padding(.horizontal, 12)
             .padding(.vertical, 5)
-            .background(.white.opacity(0.15))
+            .background(.ultraThinMaterial, in: Capsule())
             .foregroundStyle(.white)
-            .clipShape(Capsule())
+            .overlay(
+                Capsule().stroke(.white.opacity(0.3), lineWidth: 0.5)
+            )
     }
 
     private var topAccordTags: [String] {
