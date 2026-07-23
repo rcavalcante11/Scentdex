@@ -44,6 +44,8 @@ struct FeedView: View {
             }
             .navigationTitle("Feed")
             .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
         }
         .task {
             await viewModel.loadContent()
@@ -172,7 +174,7 @@ struct FeedView: View {
             HStack(spacing: 12) {
                 ForEach(0..<4, id: \.self) { _ in
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(Color(.systemGray6).opacity(0.3))
+                        .fill(.ultraThinMaterial)
                         .frame(width: 140, height: 184)
                 }
             }

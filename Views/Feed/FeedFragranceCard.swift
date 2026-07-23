@@ -54,15 +54,21 @@ struct FeedFragranceCard: View {
                         .fontWeight(.medium)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
-                        .background(familyColor.opacity(0.2))
+                        .background(.ultraThinMaterial, in: Capsule())
                         .foregroundStyle(familyColor)
-                        .clipShape(Capsule())
+                        .overlay(
+                            Capsule().stroke(familyColor.opacity(0.4), lineWidth: 0.5)
+                        )
                 }
                 .padding(10)
             }
             .frame(width: 140)
-            .background(Color(.systemGray6).opacity(0.3))
+            .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(.white.opacity(0.15), lineWidth: 0.5)
+            )
         }
         .buttonStyle(.plain)
     }

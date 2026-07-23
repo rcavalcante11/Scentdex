@@ -37,16 +37,22 @@ struct PerfumeCardView: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
-                        .background(perfume.family.color.opacity(0.85))
+                        .background(.ultraThinMaterial, in: Capsule())
                         .foregroundStyle(.white)
-                        .clipShape(Capsule())
+                        .overlay(
+                            Capsule().stroke(perfume.family.color.opacity(0.5), lineWidth: 0.5)
+                        )
                 }
             }
             .padding(12)
         }
         .frame(height: 180)
+        .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(.white.opacity(0.15), lineWidth: 0.5)
+        )
     }
 
     // MARK: - Helpers

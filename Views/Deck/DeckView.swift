@@ -82,6 +82,7 @@ struct DeckView: View {
                 }
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             .navigationTitle("My Deck")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -223,9 +224,11 @@ struct DeckView: View {
                     .fontWeight(.medium)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(mapFamily(result.family).color.opacity(0.2))
+                    .background(.ultraThinMaterial, in: Capsule())
                     .foregroundStyle(mapFamily(result.family).color)
-                    .clipShape(Capsule())
+                    .overlay(
+                        Capsule().stroke(mapFamily(result.family).color.opacity(0.4), lineWidth: 0.5)
+                    )
 
                 HStack(spacing: 16) {
                     Button {

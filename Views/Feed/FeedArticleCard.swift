@@ -24,8 +24,12 @@ struct FeedArticleCard: View {
             Text(article.emoji)
                 .font(.system(size: 32))
                 .frame(width: 60, height: 60)
-                .background(categoryColor.opacity(0.15))
+                .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(categoryColor.opacity(0.3), lineWidth: 0.5)
+                )
             
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 6) {
@@ -55,8 +59,12 @@ struct FeedArticleCard: View {
                 }
             }
             .padding(16)
-            .background(Color(.systemGray6).opacity(0.3))
+            .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(.white.opacity(0.15), lineWidth: 0.5)
+            )
         }
             .buttonStyle(.plain)
                 .sheet(isPresented: $showSafari) {
@@ -76,5 +84,3 @@ struct FeedArticleCard: View {
             }
         }
     }
-    
-
