@@ -55,9 +55,9 @@ struct RecommendationCardView: View {
         }
         .frame(width: 160, height: 220)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: 18)
                 .stroke(.white.opacity(0.18), lineWidth: 0.5)
         )
     }

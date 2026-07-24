@@ -199,8 +199,8 @@ struct RecommendationCarouselView: View {
     // MARK: - Grid View
     private func gridView(_ perfumes: [FragranceResult]) -> some View {
         LazyVGrid(
-            columns: [GridItem(.flexible(), spacing: 18), GridItem(.flexible(), spacing: 18)],
-            spacing: 18
+            columns: [GridItem(.flexible(), spacing: 26), GridItem(.flexible(), spacing: 26)],
+            spacing: 26
         ) {
             ForEach(Array(perfumes.enumerated()), id: \.element.id) { index, perfume in
                 if index < 4 {
@@ -214,7 +214,7 @@ struct RecommendationCarouselView: View {
                     RecommendationCardView(fragrance: perfume)
                         .blur(radius: 6)
                         .overlay {
-                            RoundedRectangle(cornerRadius: 16)
+                            RoundedRectangle(cornerRadius: 18)
                                 .fill(.ultraThinMaterial)
                             VStack(spacing: 8) {
                                 Image(systemName: "lock.fill")
@@ -319,11 +319,11 @@ struct RecommendationCarouselView: View {
     // MARK: - Loading / Empty
     private var loadingView: some View {
         LazyVGrid(
-            columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
-            spacing: 10
+            columns: [GridItem(.flexible(), spacing: 26), GridItem(.flexible(), spacing: 26)],
+            spacing: 26
         ) {
             ForEach(0..<2, id: \.self) { _ in
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: 18)
                     .fill(Color.secondary.opacity(0.15))
                     .frame(height: 200)
             }

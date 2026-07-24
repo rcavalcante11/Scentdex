@@ -12,21 +12,15 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("My Deck", systemImage: "rectangle.stack.fill", value: 0) {
-                tabBackground {
-                    DeckView()
-                }
+                DeckView(blobTransitionState: blobTransitionState)
             }
 
             Tab("Feed", systemImage: "newspaper.fill", value: 1) {
-                tabBackground {
-                    FeedView()
-                }
+                FeedView(blobTransitionState: blobTransitionState)
             }
 
             Tab("Scent Aura", systemImage: "sparkles", value: 2) {
-                tabBackground {
-                    scentAuraTab
-                }
+                scentAuraTab
             }
         }
         .toolbarBackground(.hidden, for: .tabBar)
@@ -36,23 +30,33 @@ struct ContentView: View {
         .preferredColorScheme(.dark)
     }
 
-    // MARK: - Shared tab background
-    /// A TabView cria um UIViewController opaco por trás de cada tab, por
-    /// isso o fundo (blobs + escurecimento) tem de ser instanciado DENTRO de
-    /// cada tab, não atrás da TabView. Todas as instâncias partilham o mesmo
-    /// `blobTransitionState`, por isso a migração entre tabs continua a
-    /// sentir-se como uma coisa só.
+    // MARK: - Derived
+    private var currentProfile: ScentProfile? {
+        ScentProfile.calculate(from: perfumes)
+    }
+
+    // MARK: - Subviews
     @ViewBuilder
-    private func tabBackground<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
+    private var scentAuraTab: some View {
+        if let profile = currentProfile {
+            NavigationStack {
+                ZStack {
+                    Color.black.ignoresSafeArea()
 
-            AmbientBlobLayer(profile: currentProfile, transitionState: blobTransitionState)
-                .ignoresSafeArea()
+                    AmbientBlobLayer(profile: profile, transitionState: blobTransitionState)
+                        .ignoresSafeArea()
 
-            globalDarkening
+                    globalDarkening
 
-            content()
+                    ScentAuraView(profile: profile)
+                }
+                .navigationTitle("Scent Aura")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbarBackground(.hidden, for: .navigationBar)
+                .toolbarColorScheme(.dark, for: .navigationBar)
+            }
+        } else {
+            emptyAuraView
         }
     }
 
@@ -68,27 +72,6 @@ struct ContentView: View {
             endPoint: .bottom
         )
         .ignoresSafeArea()
-    }
-
-    // MARK: - Derived
-    private var currentProfile: ScentProfile? {
-        ScentProfile.calculate(from: perfumes)
-    }
-
-    // MARK: - Subviews
-    @ViewBuilder
-    private var scentAuraTab: some View {
-        if let profile = currentProfile {
-            NavigationStack {
-                ScentAuraView(profile: profile)
-                    .navigationTitle("Scent Aura")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbarBackground(.hidden, for: .navigationBar)
-                    .toolbarColorScheme(.dark, for: .navigationBar)
-            }
-        } else {
-            emptyAuraView
-        }
     }
 
     private var emptyAuraView: some View {

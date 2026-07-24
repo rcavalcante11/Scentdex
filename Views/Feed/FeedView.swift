@@ -4,10 +4,16 @@ import SwiftData
 struct FeedView: View {
 
     // MARK: - Properties
+    let blobTransitionState: BlobTransitionState
+
     @State private var viewModel: FeedViewModel = FeedViewModel()
     @Query private var perfumes: [Perfume]
     @State private var selectedFragrance: FragranceResult?
     @State private var selectedTab: FeedTab = .discover
+
+    private var profile: ScentProfile? {
+        ScentProfile.calculate(from: perfumes)
+    }
 
     private var ownedPerfumes: [Perfume] {
         perfumes.filter { !$0.isWishlist }
@@ -16,31 +22,41 @@ struct FeedView: View {
     // MARK: - Body
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 32) {
-                    tabSwitcher
+            ZStack {
+                Color.black.ignoresSafeArea()
 
-                    switch selectedTab {
-                    case .discover:
-                        fragranceSection(
-                            title: "Trending Now",
-                            subtitle: "Most loved this season",
-                            fragrances: viewModel.trending,
-                            isLoading: viewModel.isLoadingFragrances
-                        )
+                AmbientBlobLayer(profile: profile, transitionState: blobTransitionState)
+                    .ignoresSafeArea()
 
-                        fragranceSection(
-                            title: "New Releases",
-                            subtitle: "Fresh from the houses",
-                            fragrances: viewModel.newReleases,
-                            isLoading: viewModel.isLoadingFragrances
-                        )
+                globalDarkening
 
-                    case .articles:
-                        articlesSection
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 32) {
+                        tabSwitcher
+
+                        switch selectedTab {
+                        case .discover:
+                            fragranceSection(
+                                title: "Trending Now",
+                                subtitle: "Most loved this season",
+                                fragrances: viewModel.trending,
+                                isLoading: viewModel.isLoadingFragrances
+                            )
+
+                            fragranceSection(
+                                title: "New Releases",
+                                subtitle: "Fresh from the houses",
+                                fragrances: viewModel.newReleases,
+                                isLoading: viewModel.isLoadingFragrances
+                            )
+
+                        case .articles:
+                            articlesSection
+                        }
                     }
+                    .padding(.bottom, 32)
                 }
-                .padding(.bottom, 32)
+                .scrollContentBackground(.hidden)
             }
             .navigationTitle("Feed")
             .navigationBarTitleDisplayMode(.large)
@@ -55,12 +71,27 @@ struct FeedView: View {
         }
     }
 
+    // MARK: - Global darkening
+    private var globalDarkening: some View {
+        LinearGradient(
+            stops: [
+                .init(color: .black.opacity(0.1), location: 0.0),
+                .init(color: .black.opacity(0.45), location: 0.4),
+                .init(color: .black.opacity(0.6), location: 0.65),
+                .init(color: .black.opacity(0.6), location: 1.0)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+    }
+
     // MARK: - Tab Switcher
     private var tabSwitcher: some View {
         GeometryReader { geo in
             let tabWidth = geo.size.width / 2
             let blobSize: CGFloat = 100
-            let blobCenterY = geo.size.height // centro exactamente na linha de corte, para um meio-círculo limpo
+            let blobCenterY = geo.size.height
             let blobX = (selectedTab == .discover ? tabWidth / 2 : tabWidth + tabWidth / 2) - blobSize / 2
 
             ZStack(alignment: .topLeading) {

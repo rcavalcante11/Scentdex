@@ -75,7 +75,6 @@ struct ScentAuraView: View {
         }
         .tint(.white)
         .scrollContentBackground(.hidden)
-        .ignoresSafeArea(edges: .top)
         .onAppear {
             Task { await viewModel.generateDescription(for: profile) }
         }
@@ -292,9 +291,6 @@ struct ScentAuraView: View {
         profile.topAccords.prefix(3).map { $0.name }
     }
 
-    /// Cores dos 3 pontinhos decorativos do botão "Aura Fingerprint".
-    /// (A camada de blobs em si já não vive aqui — ver AmbientBlobLayer,
-    /// partilhada por todas as tabs a partir do ContentView.)
     private var blobColors: [Color] {
         let sorted = profile.topAccords.prefix(3).map { $0.family.color }
         guard sorted.count >= 3 else {
@@ -328,9 +324,7 @@ struct ScentAuraView: View {
             AccordScore(name: "amber", score: 5, family: .oriental),
             AccordScore(name: "spicy", score: 3, family: .spicy),
             AccordScore(name: "earthy", score: 2, family: .herbal)
-            
         ],
         wishlistAccords: []
     ))
-    .background(Color.black)
 }

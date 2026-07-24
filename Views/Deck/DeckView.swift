@@ -4,12 +4,19 @@ import SwiftData
 struct DeckView: View {
 
     // MARK: - Properties
+    let blobTransitionState: BlobTransitionState
+
     @Environment(\.modelContext) private var modelContext
     @Query private var perfumes: [Perfume]
     @State private var showingAddPerfume = false
     @State var viewModel = DeckViewModel()
     @State private var searchText = ""
     @State private var selectedTab: DeckTab = .collection
+    @State private var isGrid = false
+
+    private var profile: ScentProfile? {
+        ScentProfile.calculate(from: perfumes)
+    }
 
     private var basePerfumes: [Perfume] {
         perfumes.filter { $0.isWishlist == (selectedTab == .wishlist) }
@@ -29,68 +36,107 @@ struct DeckView: View {
     // MARK: - Body
     var body: some View {
         NavigationStack {
-            List {
-                tabSwitcher
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
+            ZStack {
+                Color.black.ignoresSafeArea()
 
-                if !isSearching && basePerfumes.isEmpty {
-                    emptyStateView
+                AmbientBlobLayer(profile: profile, transitionState: blobTransitionState)
+                    .ignoresSafeArea()
+
+                globalDarkening
+
+                List {
+                    tabSwitcher
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
-                } else {
-                    if !filteredPerfumes.isEmpty {
-                        Section(selectedTab == .wishlist ? "In Your Wishlist" : "In Your Deck") {
-                            ForEach(filteredPerfumes) { perfume in
-                                NavigationLink(destination: PerfumeDetailView(perfume: perfume)) {
-                                    PerfumeCardView(perfume: perfume)
+
+                    if !isSearching && basePerfumes.isEmpty {
+                        emptyStateView
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                    } else {
+                        if !filteredPerfumes.isEmpty {
+                            Section(selectedTab == .wishlist ? "In Your Wishlist" : "In Your Deck") {
+                                if isGrid {
+                                    gridContent
                                         .listRowInsets(EdgeInsets())
                                         .listRowBackground(Color.clear)
-                                }
-                            }
-                            .onDelete { indexSet in
-                                for index in indexSet {
-                                    viewModel.confirmDelete(filteredPerfumes[index])
+                                        .listRowSeparator(.hidden)
+                                } else {
+                                    ForEach(filteredPerfumes) { perfume in
+                                        NavigationLink(value: perfume) {
+                                            PerfumeCardView(perfume: perfume)
+                                        }
+                                        .listRowInsets(EdgeInsets())
+                                        .listRowBackground(Color.clear)
+                                    }
+                                    .onDelete { indexSet in
+                                        for index in indexSet {
+                                            viewModel.confirmDelete(filteredPerfumes[index])
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if isSearching {
-                        Section("From Database") {
-                            if viewModel.isSearchingAPI {
-                                HStack {
-                                    ProgressView()
-                                        .scaleEffect(0.8)
-                                    Text("Searching database...")
+                        if isSearching {
+                            Section("From Database") {
+                                if viewModel.isSearchingAPI {
+                                    HStack {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                        Text("Searching database...")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                } else if viewModel.apiSearchResults.isEmpty {
+                                    Text("No results found")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
-                                }
-                            } else if viewModel.apiSearchResults.isEmpty {
-                                Text("No results found")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                ForEach(viewModel.apiSearchResults) { result in
-                                    apiResultRow(result)
+                                } else {
+                                    ForEach(viewModel.apiSearchResults) { result in
+                                        apiResultRow(result)
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
+            .navigationDestination(for: Perfume.self) { perfume in
+                PerfumeDetailView(perfume: perfume)
+            }
             .navigationTitle("My Deck")
+            .navigationDestination(for: Perfume.self) { perfume in
+                PerfumeDetailView(perfume: perfume)
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAddPerfume = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .foregroundStyle(.accent)
+                    HStack(spacing: 16) {
+                        HStack(spacing: 10) {
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) { isGrid = true }
+                            } label: {
+                                Image(systemName: "square.grid.2x2")
+                                    .foregroundStyle(isGrid ? .accent : .secondary)
+                            }
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) { isGrid = false }
+                            } label: {
+                                Image(systemName: "list.bullet")
+                                    .foregroundStyle(!isGrid ? .accent : .secondary)
+                            }
+                        }
+
+                        Button {
+                            showingAddPerfume = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .foregroundStyle(.accent)
+                        }
                     }
                 }
             }
@@ -114,12 +160,50 @@ struct DeckView: View {
         }
     }
 
+    // MARK: - Global darkening
+    private var globalDarkening: some View {
+        LinearGradient(
+            stops: [
+                .init(color: .black.opacity(0.1), location: 0.0),
+                .init(color: .black.opacity(0.45), location: 0.4),
+                .init(color: .black.opacity(0.6), location: 0.65),
+                .init(color: .black.opacity(0.6), location: 1.0)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+    }
+
     // MARK: - Subviews
+    private var gridContent: some View {
+        LazyVGrid(
+            columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+            spacing: 12
+        ) {
+            ForEach(filteredPerfumes) { perfume in
+                NavigationLink(value: perfume) {
+                    PerfumeCardView(perfume: perfume)
+                }
+                .buttonStyle(.plain)
+                .contextMenu {
+                    Button(role: .destructive) {
+                        viewModel.confirmDelete(perfume)
+                    } label: {
+                        Label("Remove", systemImage: "trash")
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 4)
+    }
+
     private var tabSwitcher: some View {
         GeometryReader { geo in
             let tabWidth = geo.size.width / 2
             let blobSize: CGFloat = 100
-            let blobCenterY = geo.size.height // centro exactamente na linha de corte, para um meio-círculo limpo
+            let blobCenterY = geo.size.height
             let blobX = (selectedTab == .collection ? tabWidth / 2 : tabWidth + tabWidth / 2) - blobSize / 2
 
             ZStack(alignment: .topLeading) {
@@ -189,7 +273,7 @@ struct DeckView: View {
     }
 
     private func apiResultRow(_ result: FragranceResult) -> some View {
-        
+
         return HStack(spacing: 12) {
             Group {
                 if let imageUrl = result.bestImageUrl,
@@ -296,57 +380,38 @@ struct DeckView: View {
     private func mapFamily(_ raw: String) -> FragranceFamily {
         let lower = raw.lowercased().trimmingCharacters(in: .whitespaces)
         switch lower {
-
-        // Woody
         case "woody", "wood", "oud", "sandalwood",
              "cedar", "vetiver", "patchouli":
             return .woody
-
-        // Floral
         case "floral", "flower", "white floral",
              "yellow floral", "rose", "powdery",
              "musky", "aldehydic", "lactonic", "iris",
              "violet", "tuberose":
             return .floral
-
-        // Oriental
         case "oriental", "amber", "balsamic",
              "warm spicy", "tobacco", "leather",
              "smoky", "animalic", "incense", "resinous":
             return .oriental
-
-        // Fresh
         case "fresh", "fruity", "tropical",
                  "light spicy", "soft spicy":
                 return .fresh
-
-        // Citrus
         case "citrus", "citric", "lemon",
              "bergamot", "orange", "grapefruit":
             return .citrus
-
-        // Aquatic
         case "aquatic", "marine", "water",
              "oceanic", "sea":
             return .aquatic
-
-        // Gourmand
         case "gourmand", "sweet", "vanilla",
              "chocolate", "caramel", "coffee",
              "food", "honey":
             return .gourmand
-
-        // Spicy
         case "spicy", "spice", "fresh spicy",
              "cinnamon", "pepper", "cardamom":
             return .spicy
-
-        // Herbal
         case "herbal", "green", "fougere",
              "aromatic", "mossy", "earthy",
              "conifer", "lavender", "mint":
             return .herbal
-
         default:
             return .floral
         }
@@ -362,11 +427,6 @@ struct DeckView: View {
         }
     }
 
-    /// Deteta sinais inequívocos de género no nome do perfume (ex: "Woman",
-    /// "Homme", "For Her"). Devolve nil quando o nome não dá sinal claro ou
-    /// dá sinais conflituosos, para não sobrepor a API sem motivo. A
-    /// heurística tem prioridade sobre a API porque já confirmámos casos em
-    /// que a Fragella devolve o género errado na origem.
     private func genderHeuristic(from name: String) -> PerfumeGender? {
         let tokens = name.lowercased()
             .components(separatedBy: CharacterSet.alphanumerics.inverted)
@@ -389,8 +449,6 @@ struct DeckView: View {
 }
 
 // MARK: - IconPressStyle
-/// Botão com feedback ao toque: encolhe ligeiramente e ganha uma sombra
-/// colorida enquanto está pressionado (substitui hover, que não existe no iPhone).
 struct IconPressStyle: ButtonStyle {
     let tint: Color
 
@@ -429,6 +487,6 @@ enum DeckTab: String, CaseIterable, Identifiable {
     for perfume in Perfume.sampleData {
         container.mainContext.insert(perfume)
     }
-    return DeckView()
+    return DeckView(blobTransitionState: BlobTransitionState())
         .modelContainer(container)
 }

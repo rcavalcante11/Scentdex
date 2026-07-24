@@ -20,12 +20,13 @@ final class BlobTransitionState {
     }
 }
 
-/// Camada de blobs ambiente. Como a TabView cria um UIViewController opaco
-/// por trás de cada tab (o que impede qualquer fundo comum "atrás" da
-/// TabView de ser visível), esta view é instanciada uma vez DENTRO de cada
-/// tab — mas todas partilham o mesmo `BlobTransitionState`, por isso a
-/// migração entre tabs continua a sentir-se como uma coisa só, não três
-/// animações independentes.
+/// Camada de blobs ambiente. Tem de ser instanciada DENTRO da NavigationStack
+/// de cada tab (não atrás da TabView, nem atrás da NavigationStack) — tanto
+/// a TabView como a NavigationStack criam, por trás dos panos, um
+/// UIViewController com fundo opaco próprio, que esconde qualquer coisa
+/// colocada "atrás" deles a partir de um nível acima. Todas as instâncias
+/// partilham o mesmo `BlobTransitionState`, por isso a migração entre tabs
+/// continua a sentir-se como uma coisa só, não três animações independentes.
 struct AmbientBlobLayer: View {
     let profile: ScentProfile?
     var transitionState: BlobTransitionState
@@ -67,10 +68,6 @@ struct AmbientBlobLayer: View {
     }
 
     // MARK: - Migration math
-    /// Calcula o deslocamento horizontal extra causado pela migração entre
-    /// tabs, puramente a partir do tempo decorrido desde a última troca —
-    /// sem estado próprio guardado, por isso funciona igual em qualquer
-    /// instância desta view, em qualquer tab.
     private func migrationOffsetX(for config: BlobConfig, elapsed: TimeInterval) -> CGFloat {
         let travelDistance: CGFloat = 900
         let startX: CGFloat = transitionState.enterFromLeft ? -travelDistance : travelDistance
@@ -107,10 +104,10 @@ struct AmbientBlobLayer: View {
         let ampY: CGFloat
         let baseScale: CGFloat
         let scaleAmp: CGFloat
-        let speed: Double        // radianos por segundo — velocidade orgânica
-        let phaseOffset: Double  // posição inicial no laço, espalha os blobs
-        let flightDuration: Double // duração da migração entre tabs
-        let flightDelay: Double    // atraso antes de começar a migrar
+        let speed: Double
+        let phaseOffset: Double
+        let flightDuration: Double
+        let flightDelay: Double
     }
 
     private var blobConfigs: [BlobConfig] {
