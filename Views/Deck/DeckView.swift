@@ -65,7 +65,7 @@ struct DeckView: View {
                                         .listRowSeparator(.hidden)
                                 } else {
                                     ForEach(filteredPerfumes) { perfume in
-                                        NavigationLink(value: perfume) {
+                                        NavigationLink(value: perfume.id) {
                                             PerfumeCardView(perfume: perfume)
                                         }
                                         .listRowInsets(EdgeInsets())
@@ -106,13 +106,12 @@ struct DeckView: View {
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
             }
-            .navigationDestination(for: Perfume.self) { perfume in
-                PerfumeDetailView(perfume: perfume)
+            .navigationDestination(for: UUID.self) { perfumeID in
+                if let perfume = perfumes.first(where: { $0.id == perfumeID }) {
+                    PerfumeDetailView(perfume: perfume)
+                }
             }
             .navigationTitle("My Deck")
-            .navigationDestination(for: Perfume.self) { perfume in
-                PerfumeDetailView(perfume: perfume)
-            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 16) {
@@ -177,20 +176,33 @@ struct DeckView: View {
 
     // MARK: - Subviews
     private var gridContent: some View {
-        LazyVGrid(
-            columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
-            spacing: 12
-        ) {
-            ForEach(filteredPerfumes) { perfume in
-                NavigationLink(value: perfume) {
-                    PerfumeCardView(perfume: perfume)
-                }
-                .buttonStyle(.plain)
-                .contextMenu {
-                    Button(role: .destructive) {
-                        viewModel.confirmDelete(perfume)
-                    } label: {
-                        Label("Remove", systemImage: "trash")
+        // Grid (não-lazy), não LazyVGrid — o LazyVGrid recicla views
+        // internamente para poupar memória, o que confunde a pilha de
+        // navegação do NavigationLink (o botão "voltar" pode acabar a
+        // apontar para o item errado). Como a collection não costuma ser
+        // enorme, perder o "lazy loading" aqui não tem custo real.
+        let rows = stride(from: 0, to: filteredPerfumes.count, by: 2).map { index in
+            Array(filteredPerfumes[index..<min(index + 2, filteredPerfumes.count)])
+        }
+
+        return Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            ForEach(Array(rows.enumerated()), id: \.offset) { _, rowPerfumes in
+                GridRow {
+                    ForEach(rowPerfumes) { perfume in
+                        NavigationLink(value: perfume.id) {
+                            PerfumeCardView(perfume: perfume)
+                        }
+                        .buttonStyle(.plain)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                viewModel.confirmDelete(perfume)
+                            } label: {
+                                Label("Remove", systemImage: "trash")
+                            }
+                        }
+                    }
+                    if rowPerfumes.count == 1 {
+                        Color.clear
                     }
                 }
             }
