@@ -105,3 +105,5 @@ class Perfume {
         ]
     }
 }
+
+extension Perfume: nonisolated Identifiable {}

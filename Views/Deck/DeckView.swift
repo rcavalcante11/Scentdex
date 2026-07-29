@@ -21,12 +21,31 @@ struct DeckView: View {
     // (era isto que causava o botão "voltar" a saltar para o item seguinte).
     @State private var path: [UUID] = []
 
+    // Perfume da Wishlist actualmente aberto no sheet estilo "profile match".
+    // Perfumes da Collection continuam a usar o push via `path` acima.
+    // Usa um wrapper local em vez de tornar Perfume Identifiable diretamente
+    // — o @Model do SwiftData já gera conformidades com isolamento de actor
+    // muito específico (nonisolated PersistentModel/Observable/Sendable),
+    // e adicionar mais uma conformidade ao próprio Perfume entrava em
+    // conflito com essas regras. Isto evita mexer no modelo de todo.
+    private struct WishlistSheetItem: Identifiable {
+        let id: UUID
+        let perfume: Perfume
+    }
+    @State private var wishlistSheetItem: WishlistSheetItem?
+
     private var profile: ScentProfile? {
         ScentProfile.calculate(from: perfumes)
     }
 
     private var basePerfumes: [Perfume] {
         perfumes.filter { $0.isWishlist == (selectedTab == .wishlist) }
+    }
+
+    // Perfumes já na Collection, usados para calcular o match % no
+    // WishlistDetailSheet.
+    private var deckPerfumes: [Perfume] {
+        perfumes.filter { !$0.isWishlist }
     }
 
     private var filteredPerfumes: [Perfume] {
@@ -72,11 +91,24 @@ struct DeckView: View {
                                         .listRowSeparator(.hidden)
                                 } else {
                                     ForEach(filteredPerfumes) { perfume in
-                                        NavigationLink(value: perfume.id) {
-                                            PerfumeCardView(perfume: perfume)
+                                        if selectedTab == .wishlist {
+                                            // Wishlist abre como sheet estilo
+                                            // profile-match, não como push.
+                                            Button {
+                                                wishlistSheetItem = WishlistSheetItem(id: perfume.id, perfume: perfume)
+                                            } label: {
+                                                PerfumeCardView(perfume: perfume)
+                                            }
+                                            .buttonStyle(.plain)
+                                            .listRowInsets(EdgeInsets())
+                                            .listRowBackground(Color.clear)
+                                        } else {
+                                            NavigationLink(value: perfume.id) {
+                                                PerfumeCardView(perfume: perfume)
+                                            }
+                                            .listRowInsets(EdgeInsets())
+                                            .listRowBackground(Color.clear)
                                         }
-                                        .listRowInsets(EdgeInsets())
-                                        .listRowBackground(Color.clear)
                                     }
                                     .onDelete { indexSet in
                                         for index in indexSet {
@@ -153,6 +185,9 @@ struct DeckView: View {
             .sheet(isPresented: $showingAddPerfume) {
                 AddPerfumeView()
             }
+            .sheet(item: $wishlistSheetItem) { item in
+                WishlistDetailSheet(perfume: item.perfume, ownedPerfumes: deckPerfumes)
+            }
             .alert("Remove Perfume", isPresented: $viewModel.showingDeleteAlert) {
                 Button("Remove", role: .destructive) {
                     if let perfume = viewModel.perfumeToDelete {
@@ -211,7 +246,11 @@ struct DeckView: View {
                                 }
                             }
                             .onTapGesture {
-                                path.append(perfume.id)
+                                if selectedTab == .wishlist {
+                                    wishlistSheetItem = WishlistSheetItem(id: perfume.id, perfume: perfume)
+                                } else {
+                                    path.append(perfume.id)
+                                }
                             }
                     }
                     if rowPerfumes.count == 1 {
