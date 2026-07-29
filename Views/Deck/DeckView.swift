@@ -14,6 +14,13 @@ struct DeckView: View {
     @State private var selectedTab: DeckTab = .collection
     @State private var isGrid = false
 
+    // Navegação programática — path explícito partilhado por lista e grade.
+    // Isto substitui a navegação puramente declarativa por NavigationLink
+    // no modo grade, onde o .contextMenu colado ao NavigationLink competia
+    // pelo mesmo gesto de toque e confundia qual "valor" tinha sido activado
+    // (era isto que causava o botão "voltar" a saltar para o item seguinte).
+    @State private var path: [UUID] = []
+
     private var profile: ScentProfile? {
         ScentProfile.calculate(from: perfumes)
     }
@@ -35,7 +42,7 @@ struct DeckView: View {
 
     // MARK: - Body
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ZStack {
                 Color.black.ignoresSafeArea()
 
@@ -189,17 +196,23 @@ struct DeckView: View {
             ForEach(Array(rows.enumerated()), id: \.offset) { _, rowPerfumes in
                 GridRow {
                     ForEach(rowPerfumes) { perfume in
-                        NavigationLink(value: perfume.id) {
-                            PerfumeCardView(perfume: perfume)
-                        }
-                        .buttonStyle(.plain)
-                        .contextMenu {
-                            Button(role: .destructive) {
-                                viewModel.confirmDelete(perfume)
-                            } label: {
-                                Label("Remove", systemImage: "trash")
+                        // Navegação programática em vez de NavigationLink:
+                        // separa o gesto de "abrir detalhe" do gesto do
+                        // .contextMenu (long-press), que antes competiam
+                        // pelo mesmo toque quando ambos viviam no mesmo
+                        // NavigationLink.
+                        PerfumeCardView(perfume: perfume)
+                            .contentShape(Rectangle())
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    viewModel.confirmDelete(perfume)
+                                } label: {
+                                    Label("Remove", systemImage: "trash")
+                                }
                             }
-                        }
+                            .onTapGesture {
+                                path.append(perfume.id)
+                            }
                     }
                     if rowPerfumes.count == 1 {
                         Color.clear
