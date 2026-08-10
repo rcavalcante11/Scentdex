@@ -22,7 +22,7 @@ struct ScentProfile {
 
     // MARK: - Computed
     var accordLabel: String {
-        let sorted = familyScores.sorted { $0.value > $1.value }
+        let sorted = familyScores.sorted(by: Self.sortedByScoreThenName)
         let first = sorted.first?.key ?? dominantFamily
         let second = sorted.count > 1 ? sorted[1].key : nil
         return Self.labelFor(dominant: first, second: second)
@@ -50,8 +50,16 @@ struct ScentProfile {
                 wishlistAccordSum[key, default: 0] += pts
             }
         }
+        // Desempate alfabético (por chave) — sem isto, dois acordes com a
+        // mesma pontuação podem trocar de posição entre chamadas
+        // consecutivas de calculate(), porque a ordem de iteração de um
+        // Dictionary não é garantida. Isso fazia o ScentAuraView pensar
+        // que o perfil tinha mudado a cada re-render, disparando o
+        // onChange e regenerando a descrição sem necessidade.
         let wishlistAccords = wishlistAccordSum
-            .sorted { $0.value > $1.value }
+            .sorted { lhs, rhs in
+                lhs.value != rhs.value ? lhs.value > rhs.value : lhs.key < rhs.key
+            }
             .prefix(5)
             .map { AccordScore(name: $0.key, score: $0.value, family: mapAccordToFamily($0.key)) }
 
@@ -84,12 +92,18 @@ struct ScentProfile {
             familyScores[family] = sum + (familyBonus[family, default: 0])
         }
 
-        let sortedFamilies = familyScores.sorted { $0.value > $1.value }
+        // Mesmo desempate aqui — sem ele, dominantFamily/secondFamily podiam
+        // trocar entre si quando duas famílias empatavam em pontuação,
+        // fazendo o título do perfil (profileTitle) "piscar" entre duas
+        // labels diferentes.
+        let sortedFamilies = familyScores.sorted(by: sortedByScoreThenName)
         guard let dominant = sortedFamilies.first else { return nil }
         let second = sortedFamilies.count > 1 ? sortedFamilies[1].key : nil
 
         let topAccords = accordSum
-            .sorted { $0.value > $1.value }
+            .sorted { lhs, rhs in
+                lhs.value != rhs.value ? lhs.value > rhs.value : lhs.key < rhs.key
+            }
             .prefix(8)
             .map { AccordScore(name: $0.key, score: $0.value, family: mapAccordToFamily($0.key)) }
 
@@ -104,8 +118,11 @@ struct ScentProfile {
                 noteCount[note.lowercased(), default: 0] += 1
             }
         }
+        // Idem para as notas — desempate alfabético em caso de contagens iguais.
         let topNotes = noteCount
-            .sorted { $0.value > $1.value }
+            .sorted { lhs, rhs in
+                lhs.value != rhs.value ? lhs.value > rhs.value : lhs.key < rhs.key
+            }
             .prefix(10)
             .map { $0.key.capitalized }
 
@@ -118,6 +135,17 @@ struct ScentProfile {
             topAccords: Array(topAccords),
             wishlistAccords: Array(wishlistAccords)
         )
+    }
+
+    // MARK: - Deterministic sort helper
+    // Critério de desempate partilhado para .sorted sobre [FragranceFamily: Double]:
+    // ordena por score descendente, e em caso de empate, pelo rawValue da
+    // família (alfabético) para garantir resultado idêntico em toda chamada.
+    private static nonisolated func sortedByScoreThenName(
+        _ lhs: (key: FragranceFamily, value: Double),
+        _ rhs: (key: FragranceFamily, value: Double)
+    ) -> Bool {
+        lhs.value != rhs.value ? lhs.value > rhs.value : lhs.key.rawValue < rhs.key.rawValue
     }
 
     // MARK: - Level → Points
